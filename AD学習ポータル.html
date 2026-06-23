@@ -1594,6 +1594,24 @@ const BASICS_PHASES = [
     name: 'エントリーフェーズ',
     desc: '「なぜ自分がこの課題に取り組むか（Why you?）」を確立し、助けたい顧客を発見し、その課題を深掘りする段階。ここで固めた軸がブレると、後の仮説検証で大量の手戻りが生まれる。',
     focus: 'Why you? / 顧客発見 / 課題発見 の3つをブラさない状態にすること',
+    duration: '1〜2ヶ月',
+    actions: [
+      'ゲンバ（課題の現場）に足を運び、自分が気になる課題を肌で感じる',
+      'ホンバ（先進事例・スタートアップのピッチ等）に触れて領域の感覚をつかむ',
+      '「なぜ自分がこの課題に向き合うのか（Why you?）」を言語化する',
+      '助けたい顧客候補を仮設定し、5〜10人にヒアリングして課題の存在を確認する',
+      '課題の深さ・広さ・未解決度を評価して、取り組む課題を絞り込む',
+    ],
+    criteria: [
+      'Why you?が他者に説明できる言葉で言語化されている',
+      '顧客候補と課題の仮説が少なくとも1つある',
+      '課題が「不便・不満・不安・不足」として具体的に言語化されている',
+    ],
+    struggles: [
+      'アイデア（解決策）から入ってしまい、顧客・課題が後回しになる',
+      'Why you?が薄く「面白そうだから」止まりで、最初の壁で折れる',
+      'ゲンバに行かず、デスクリサーチだけで課題を決めてしまう',
+    ],
     myths: [
       { bad: 'まず「儲かるか？」を考える',
         good: 'エントリー段階で「儲かるか？」を問うのはNG。最初に問うべきは「なぜあなたがこの課題に取り組むのか（Why you?）」。Why you?がない起案者は300回の仮説検証の途中で必ず折れる。' },
@@ -1609,6 +1627,26 @@ const BASICS_PHASES = [
     name: '初期仮説検証フェーズ',
     desc: '解決策の仮説を立て、顧客に当て、フィードバックを受け取りピボットする。リーンキャンバスで思考を整理し、MVPの6レベルで最速検証を回す。「あとは作るだけ」という状況はほぼない。疑い続けることが重要。',
     focus: '顧客に仮説をぶつけて改善するサイクルを、いかに速く大量に回せるか',
+    duration: '2〜4ヶ月',
+    actions: [
+      'リーンキャンバスを作成し、顧客・課題・UVP・ソリューション・マネタイズの仮説を整理する',
+      '仮説検証リストを作り、何を検証するかを明確にしてからヒアリングに臨む',
+      '顧客候補10〜30人に「過去の行動」を深掘りするヒアリングを実施する',
+      'MVPの6レベル（Paper→Concierge→Combinationの順）で最小限の形で検証を回す',
+      'ヒアリング結果をもとに仮説を修正（ピボット）し、次の検証サイクルへ進む',
+      'この検証サイクルを300回繰り返すつもりで、とにかく回転数を上げる',
+    ],
+    criteria: [
+      '「この課題は深く・広く・未解決だ」と顧客ヒアリングで確認できている',
+      'ソリューション仮説に対して「使いたい」ではなく「実際に試した」顧客がいる',
+      'MVPへの反応をもとに仮説を少なくとも1回以上修正（ピボット）している',
+    ],
+    struggles: [
+      '「使いますか？」と聞いて「使います」という回答を根拠にしてしまう（意思ではなく行動を聞く）',
+      '検証より先に作り込んでしまい、後で全部やり直しになる',
+      'ヒアリング数が少なく（3〜5人）、「わかった」と思い込んでしまう',
+      '一度決めたソリューションへの執着が強く、ピボットできない',
+    ],
     myths: [
       { bad: '解決策が決まったらすぐビジネスモデルを作り込む',
         good: 'ビジネスモデルは解決策が確定してから考える。解決策はどうせ変わるため、変わる前に作り込むのは無駄。エントリー段階でビジネスモデルを聞いても意味がない。' },
@@ -1626,6 +1664,26 @@ const BASICS_PHASES = [
     name: '収益性実証フェーズ',
     desc: '採算が取れる構造を「再現性を持って」証明する段階。「友達だから買ってくれた」ではなく、一定の方法で顧客獲得コストが計算できる状態。競争優位性と拡大仮説も固める。',
     focus: '構造として再現できているか。なぜ自社が競合に勝てるか',
+    duration: '3〜6ヶ月',
+    actions: [
+      '「友人・知人以外」のPrimary Customerに正規価格で売ることを目指す',
+      '価格設定を「顧客が捻出可能な最高金額」から逆算して決める',
+      '顧客獲得チャネル（広告・展示会・紹介等）を複数試し、再現性のある方法を1つ特定する',
+      'CAC（顧客獲得コスト）とLTV（顧客生涯価値）を実測し、LTV > CACを証明する',
+      '競合との差別化ポイント（競争優位性）を言語化し、顧客に伝えられる状態にする',
+      '拡大仮説（次フェーズでどう顧客を増やすか）を立てて検証を始める',
+    ],
+    criteria: [
+      '身内以外の顧客が正規価格で繰り返し購入している（再現性の証明）',
+      'LTV > CACが数字で示せる',
+      '顧客獲得の再現性ある方法が1つ以上特定できている',
+    ],
+    struggles: [
+      '知人への販売で「売れた」と満足してしまい、再現性の検証を後回しにする',
+      '価格を低く設定しすぎて、後から上げられず採算が合わなくなる',
+      'CACを測定していないため、どの獲得チャネルが効いているかわからない',
+      'PMF（製品市場適合）が確認できていないまま拡大投資に走ってしまう',
+    ],
     myths: [
       { bad: '顧客が希望する価格（できるだけ安く）で売る',
         good: '値付けは「顧客が捻出可能な最高金額」から設定し、その価格で売れる売り方を開発する。価格は下げられるが上げられない。高単価の余力が後の試練を乗り越える体力になる。' },
@@ -1637,6 +1695,26 @@ const BASICS_PHASES = [
     name: '拡大フェーズ〜黒字化フェーズ',
     desc: '拡大ドライバーが特定でき、マーケティング・営業でスケールさせる時期。仮説の時代から「達成とコミット」の時代へと性質が変わる。数億円規模まで成長し黒字化を達成する。',
     focus: '何が事業拡大のカギか（拡大ドライバー）。売上・利益にコミットして達成する',
+    duration: '6ヶ月〜数年',
+    actions: [
+      '拡大ドライバー（口コミ・広告・営業・パートナー等）を特定し、そこに集中投資する',
+      'マーケティング・セールスの仕組みを構築し、個人の能力に依存しない再現性を作る',
+      'チームを拡大し、「人が増えれば売上も増える」構造を実現する',
+      '事業構造（収入・支出・利益の流れ）を数字で表現した事業計画を作成する',
+      'ROI（黒字化後の利益規模・キャッシュボトム・黒字化スピード）を軸に投資判断を得る',
+      '既存顧客の深耕（LTV向上）と新規顧客獲得の両輪で収益を拡大する',
+    ],
+    criteria: [
+      'チームを増やせば売上も増える構造が確立されている',
+      '黒字化を達成し、売上がコストを恒常的に上回っている',
+      '拡大ドライバーが明確で、次の成長に向けた投資先が決まっている',
+    ],
+    struggles: [
+      'PMFが未確認のまま拡大投資をしてしまい、穴の空いたバケツに水を注ぐ状態になる',
+      '創業メンバーへの依存度が高く、スケールしても仕組み化できない',
+      '事業計画が楽観的すぎて、キャッシュボトムの見積もりが甘くなる',
+      '拡大ドライバーを特定せずに全方位に投資して、どれも中途半端になる',
+    ],
     myths: [
       { bad: '事業計画書は一般的なフォーマット（競合分析・市場規模・KPI等）で作れる',
         good: '新規事業の事業計画はゼロから手作りで事業構造（お金の入りと出）を表現する。決済者が見るのはROIの3要素：①黒字化後の利益規模 ②キャッシュボトム（累積投資額） ③スピード（黒字化までの年数）。これが魅力的でなければ投資は通らない。' },
@@ -1910,13 +1988,55 @@ function renderBasicsScreen() {
     `<span class="concept-chip" onclick="openDict('${c}')">${c}</span>`
   ).join('');
 
+  const actionsHtml = phase.actions ? `
+    <div class="b-section-label">このフェーズでやること</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px">
+      ${phase.actions.map((a, i) => `
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:#333;line-height:1.6">
+          <span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:#2563eb;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px">${i+1}</span>
+          <span>${a}</span>
+        </div>
+      `).join('')}
+    </div>
+  ` : '';
+
+  const criteriaHtml = phase.criteria ? `
+    <div class="b-section-label">次フェーズへの通過基準</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px">
+      ${phase.criteria.map(c => `
+        <div style="display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#333;line-height:1.6">
+          <span style="flex-shrink:0;color:#16a34a;font-size:14px;margin-top:1px">✓</span>
+          <span>${c}</span>
+        </div>
+      `).join('')}
+    </div>
+  ` : '';
+
+  const strugglesHtml = phase.struggles ? `
+    <div class="b-section-label">よくある詰まりどころ</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px">
+      ${phase.struggles.map(s => `
+        <div style="display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#333;line-height:1.6">
+          <span style="flex-shrink:0;color:#dc2626;font-size:14px;margin-top:1px">⚠</span>
+          <span>${s}</span>
+        </div>
+      `).join('')}
+    </div>
+  ` : '';
+
   setScreen(`
     <div class="fade">
       <div class="phase-tabs">${tabs}</div>
-      <div class="bph-phase">${phase.tab}</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+        <div class="bph-phase" style="margin-bottom:0">${phase.tab}</div>
+        ${phase.duration ? `<div style="font-size:11px;color:#666;background:#f3f4f6;padding:2px 8px;border-radius:20px">目安 ${phase.duration}</div>` : ''}
+      </div>
       <div class="bph-name">${phase.name}</div>
       <div class="bph-desc">${phase.desc}</div>
       <div class="bph-focus"><strong>このフェーズの焦点</strong>${phase.focus}</div>
+      ${actionsHtml}
+      ${criteriaHtml}
+      ${strugglesHtml}
       ${phase.myths.length > 0 ? `
         <div class="b-section-label">よくある誤解（クリックで解説）</div>
         <div class="myth-list">${myths}</div>
