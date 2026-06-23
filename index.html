@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AD事業理解ポータル</title>
+<style>
+:root {
+  --bg: #f5f5f2;
+  --surface: #fff;
+  --border: #e4e4e0;
+  --text: #111;
+  --muted: #888;
+  --c0: #2563eb;
+  --c1: #7c3aed;
+  --c2: #059669;
+  --c3: #ea580c;
+  --c4: #dc2626;
+  --c5: #0891b2;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  background: var(--bg); color: var(--text); min-height: 100vh;
+}
+.shell { max-width: 680px; margin: 0 auto; padding: 32px 20px 80px; }
+
+/* top bar */
+.top-bar { display: flex; align-items: center; margin-bottom: 36px; }
+.logo { font-weight: 800; font-size: 15px; }
+.logo span { color: var(--c0); }
+.back-btn {
+  display: none; align-items: center; gap: 5px;
+  font-size: 13px; color: var(--muted); cursor: pointer;
+  border: none; background: none; padding: 0; margin-right: auto;
+}
+.back-btn:hover { color: var(--text); }
+
+/* breadcrumbs */
+.breadcrumbs {
+  display: none; flex-wrap: wrap; gap: 4px; align-items: center;
+  margin-bottom: 20px; font-size: 12px; color: var(--muted);
+}
+.breadcrumbs.visible { display: flex; }
+.bc-item { background: var(--border); padding: 2px 8px; border-radius: 20px; color: #555; font-size: 11px; }
+.bc-sep { color: var(--border); }
+
+/* prompt */
+.prompt { margin-bottom: 24px; }
+.prompt h2 { font-size: 22px; font-weight: 800; line-height: 1.35; margin-bottom: 6px; }
+.prompt p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* cards */
+.cards { display: flex; flex-direction: column; gap: 10px; }
+.card {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 16px 18px;
+  cursor: pointer; transition: all .15s;
+  display: flex; align-items: center; gap: 14px;
+}
+.card:hover { border-color: #bbb; box-shadow: 0 2px 10px rgba(0,0,0,.07); transform: translateY(-1px); }
+.card-icon { font-size: 22px; flex-shrink: 0; width: 36px; text-align: center; }
+.card-body { flex: 1; }
+.card-title { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+.card-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.card-sub { font-size: 11px; color: #aaa; margin-top: 4px; }
+.card-tag {
+  display: inline-block; font-size: 10px; font-weight: 700; color: var(--muted);
+  background: var(--bg); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 4px; margin-bottom: 3px;
+}
+.card-color-bar { width: 4px; border-radius: 4px; align-self: stretch; flex-shrink: 0; }
+.chevron { color: var(--muted); flex-shrink: 0; }
+
+/* result */
+.result-q { font-size: 13px; color: var(--muted); margin-bottom: 18px; line-height: 1.6; }
+.domain-results { display: flex; flex-direction: column; gap: 10px; }
+
+.dr-card {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 12px; overflow: hidden;
+}
+.dr-top {
+  padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer;
+}
+.dr-top:hover { background: #fafaf8; }
+.dr-score {
+  width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 800;
+}
+.score-main  { color: #fff; }
+.score-sub   { background: transparent !important; border: 2.5px solid; }
+.score-opt   { background: transparent !important; border: 2px dashed; opacity:.65; font-size:12px; }
+.dr-meta { flex: 1; }
+.dr-name { font-size: 14px; font-weight: 700; }
+.dr-level { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.dr-chev { color: var(--muted); transition: transform .2s; flex-shrink:0; }
+.dr-chev.open { transform: rotate(180deg); }
+
+.dr-body { display: none; padding: 0 16px 14px; border-top: 1px solid var(--border); }
+.dr-body.open { display: block; }
+.dr-section { margin-top: 12px; }
+.dr-label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 3px; }
+.dr-text { font-size: 13px; color: #333; line-height: 1.65; }
+.dr-domain-link { display: block; width: 100%; margin-top: 12px; padding: 8px 12px; border-radius: 8px; border: 1px solid; font-size: 12px; font-weight: 600; cursor: pointer; text-align: left; }
+
+.restart-btn {
+  display: flex; align-items: center; gap: 7px; margin-top: 28px;
+  font-size: 13px; color: var(--muted); cursor: pointer;
+  background: none; border: none; padding: 0;
+}
+.restart-btn:hover { color: var(--text); }
+
+/* domain index cards */
+.domain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.domain-index-card {
+  border-radius: 12px; padding: 16px; cursor: pointer;
+  transition: opacity .15s; color: #fff;
+}
+.domain-index-card:hover { opacity: .88; }
+.dic-name { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+.dic-desc { font-size: 11px; opacity: .88; line-height: 1.5; }
+
+/* phase index */
+.phase-index-card {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 14px 16px; cursor: pointer;
+  transition: all .15s; display: flex; align-items: center; gap: 12px;
+}
+.phase-index-card:hover { border-color: #bbb; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.pic-tag { font-size: 10px; font-weight: 700; color: var(--muted); margin-bottom: 3px; }
+.pic-name { font-size: 14px; font-weight: 700; }
+.pic-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.pic-roles { display: flex; gap: 4px; margin-top: 6px; }
+.pic-role-badge { font-size: 10px; background: var(--bg); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; color: #666; }
+
+/* domain detail view */
+.domain-detail-header {
+  border-radius: 12px; padding: 18px 20px; color: #fff; margin-bottom: 20px;
+}
+.ddh-name { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+.ddh-desc { font-size: 13px; opacity: .9; line-height: 1.6; }
+
+.when-useful { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+.wu-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.wu-row { display: flex; gap: 8px; margin-bottom: 8px; font-size: 13px; align-items: baseline; }
+.wu-row:last-child { margin-bottom: 0; }
+.wu-phase { font-weight: 700; min-width: 80px; flex-shrink: 0; font-size: 12px; }
+.wu-score { flex-shrink: 0; font-size: 13px; font-weight: 700; min-width: 20px; }
+.wu-note { color: #555; line-height: 1.5; font-size: 12px; }
+
+/* domain section blocks */
+.domain-section { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+.domain-section-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px; padding-left: 8px; border-left: 3px solid; }
+.challenge-list { display: flex; flex-direction: column; gap: 10px; }
+.challenge-item { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.challenge-problem, .challenge-solution { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; line-height: 1.6; }
+.challenge-problem { color: #444; }
+.challenge-solution { color: #333; font-weight: 500; }
+.challenge-badge { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; white-space: nowrap; margin-top: 2px; flex-shrink: 0; }
+.challenge-badge-problem { background: #f3f4f6; color: #666; }
+.challenge-badge-solution { color: #fff; }
+.approach-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.approach-item { display: flex; gap: 10px; font-size: 13px; color: #444; line-height: 1.5; align-items: flex-start; }
+.approach-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.case-cards { display: flex; flex-direction: column; gap: 10px; }
+.case-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+.case-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+.case-company { font-size: 13px; font-weight: 700; color: var(--text); }
+.case-tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+.case-summary { font-size: 12px; color: #555; line-height: 1.6; }
+
+.section-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+
+.fade { animation: fadeUp .18s ease; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ─── BASICS ─── */
+.phase-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; margin-bottom: 22px; scrollbar-width: none; }
+.phase-tabs::-webkit-scrollbar { display: none; }
+.phase-tab {
+  flex-shrink: 0; padding: 7px 14px; border-radius: 20px;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  background: var(--border); color: var(--muted); border: none; transition: all .15s;
+}
+.phase-tab.active { background: var(--text); color: #fff; }
+.phase-tab:hover:not(.active) { background: #ddd; color: var(--text); }
+
+.bph-phase { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+.bph-name { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+.bph-desc { font-size: 13px; color: #444; line-height: 1.65; margin-bottom: 14px; }
+.bph-focus {
+  background: #f0f0ec; border-radius: 8px; padding: 11px 14px;
+  font-size: 12px; color: #555; line-height: 1.55; margin-bottom: 22px;
+}
+.bph-focus strong { color: var(--text); display: block; font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+
+.b-section-label { font-size: 10px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+
+/* Misconception cards */
+.myth-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 22px; }
+.myth-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; cursor: pointer; }
+.myth-top { padding: 11px 14px; display: flex; align-items: flex-start; gap: 10px; }
+.myth-top:hover { background: #fafaf8; }
+.myth-badge { flex-shrink: 0; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-top: 2px; }
+.myth-text { font-size: 13px; line-height: 1.5; flex: 1; }
+.myth-body { display: none; padding: 0 14px 12px; border-top: 1px solid var(--border); }
+.myth-body.open { display: block; }
+.myth-row { display: flex; gap: 8px; margin-top: 10px; align-items: flex-start; }
+.myth-row-badge { flex-shrink: 0; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-top: 2px;
+  background: #dcfce7; color: #16a34a; }
+.myth-row-text { font-size: 12px; color: #444; line-height: 1.6; }
+
+/* Concept chips */
+.concept-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 32px; }
+.concept-chip {
+  font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 20px;
+  cursor: pointer; border: 1.5px solid var(--border); background: var(--surface);
+  color: var(--text); transition: all .15s;
+}
+.concept-chip:hover { border-color: var(--text); background: var(--bg); }
+
+/* Dictionary modal */
+.dict-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.45); z-index: 200; align-items: flex-end; justify-content: center;
+}
+.dict-overlay.open { display: flex; }
+.dict-modal {
+  background: var(--surface); border-radius: 16px 16px 0 0;
+  padding: 24px 20px 48px; width: 100%; max-width: 680px;
+  max-height: 65vh; overflow-y: auto;
+}
+.dict-modal-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+.dict-modal-term { font-size: 18px; font-weight: 800; }
+.dict-modal-close { font-size: 22px; cursor: pointer; color: var(--muted); border: none; background: none; padding: 0; line-height: 1; }
+.dict-modal-def { font-size: 13px; color: #333; line-height: 1.7; margin-bottom: 14px; }
+.dict-modal-eg { font-size: 12px; color: #555; background: var(--bg); border-radius: 8px; padding: 10px 14px; line-height: 1.6; }
+.dict-modal-eg strong { color: var(--muted); display: block; font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+
+/* steps dots */
+.steps { display: flex; gap: 5px; align-items: center; margin-bottom: 28px; }
+.step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: all .2s; }
+.step-dot.done { background: var(--text); }
+.step-dot.active { background: var(--text); width: 22px; border-radius: 4px; }
+.step-label { font-size: 11px; color: var(--muted); margin-left: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="top-bar">
+    <button class="back-btn" id="back-btn" onclick="goBack()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M10 3L5 8l5 5"/></svg>
+      戻る
+    </button>
+    <div class="logo" style="margin-left:auto">AD<span>.</span>ポータル</div>
+  </div>
+  <div class="steps" id="steps"></div>
+  <div class="breadcrumbs" id="breadcrumbs"></div>
+  <div id="screen"></div>
+</div>
+
+<!-- 概念辞書モーダル -->
+<div class="dict-overlay" id="dict-overlay" onclick="closeDict()">
+  <div class="dict-modal" onclick="event.stopPropagation()">
+    <div class="dict-modal-header">
+      <span class="dict-modal-term" id="dict-term"></span>
+      <button class="dict-modal-close" onclick="closeDict()">×</button>
+    </div>
+    <div class="dict-modal-def" id="dict-def"></div>
+    <div class="dict-modal-eg" id="dict-eg"></div>
+  </div>
+</div>
+
+<script>
+// ─── MASTER DATA ─────────────────────────────────────────────────
+
+const DOMAIN_META = [
+  { id:'Innovation', color:'#2563eb',
+    short:'社内新規事業の仕組みづくり',
+    long:'大企業の社内新規事業制度を0から設計・運営する。公募制度設計・ステージゲート体系・起案者への伴走支援が主戦場。「多産多死」の仕組みで事業の種を量産する。',
+    challenges:[
+      { problem:'公募制度はあるが応募が少なく形骸化している', solution:'評価基準の刷新・応募ハードル低減・Founder Issue Fit WSによる起案者発掘を3点セットで打つ。artience事例ではエントリー数が大幅増加。' },
+      { problem:'事業アイデアが検証されずに消えていく', solution:'MVP1〜MVP2の各フェーズで専任コンサルが伴走。「課題の深さ」を検証するヒアリング設計を徹底支援し、アイデアを事業仮説に引き上げる。' },
+      { problem:'ステージゲートが曖昧で撤退・投資判断ができない', solution:'各フェーズの通過基準・KPI・撤退条件を定義した体系的なステージゲートを構築。「多産多死」の判断軸を経営レベルに定着させる。' },
+      { problem:'経営トップのコミットメントが薄く制度が機能しない', solution:'トップコミットメントの言語化・社内広報設計・キックオフイベント設計で経営の覚悟を全社に可視化する。' },
+    ],
+    approaches:[
+      '公募制度の全面設計（テーマ設定・募集方法・審査基準・メンタリング・撤退基準まで一気通貫）',
+      'WILL/ENTRY〜EXITまでの体系的ステージゲート構築（各フェーズの通過基準・KPI・追加投資条件を設計）',
+      'Founder Issue Fit WSによるアイデア創出・起案者の「なぜ自分か（Why you?）」深掘り',
+      '専任コンサルタントによる起案者への高解像度メンタリング伴走（実際に新規事業を立ち上げた経験者が担当）',
+      '社内広報・キックオフイベント・トップコミットメント言語化による風土醸成',
+      '新規事業支援SaaS「IncubationSuite」の導入・活用支援で情報管理と審査効率を向上',
+    ],
+    cases:[
+      { company:'トヨタ自動車', tag:'仕組みづくり', summary:'B-project（社会課題起点の全社公募制度）を設計・運営。2022年度の起案者総数3,500人以上。「リーンスタートアップ」→「トヨタ生産方式」と企業固有の言葉に翻訳しながら浸透。ステージゲートが全社のものさしとして定着。' },
+      { company:'artience（化学）', tag:'仕組みづくり', summary:'公募制度を全面刷新。評価基準の再設計・応募ハードル低減でエントリー数を大幅増加。審査基準の統一化と新規事業文化の醸成をセットで支援。' },
+      { company:'ロッテ', tag:'仕組みづくり＋伴走', summary:'ミライノベーションプロジェクトを強化。「誰でも挑戦できる」マインド醸成セミナー実施。顧客課題の深掘りを徹底した実践的メンタリングで社員が主体的に動ける体制を構築。' },
+      { company:'三菱マテリアル', tag:'仕組みづくり＋伴走', summary:'マネジメントガイドライン策定・ステージゲート構築。社内初のカーブアウト実現に向けた財務計画・事業モデル構築・経営合意形成を伴走支援。' },
+    ],
+    whenUseful:[
+      { phase:'WILL/ENTRY', score:'◎', note:'アイデアの種を探す起案者を伴走。Founder Issue FitのWSを提供。' },
+      { phase:'MVP1', score:'◎', note:'顧客ヒアリング設計・課題の深さの検証を支援。' },
+      { phase:'MVP2', score:'◎', note:'プロトタイプ検証・最初の顧客特定を伴走。' },
+      { phase:'制度設計', score:'◎', note:'ステージゲート・評価基準・目的の言語化を設計。' },
+      { phase:'方針策定', score:'◎', note:'経営として「なぜ今やるか」を言語化。トップコミットメント設計。' },
+    ]
+  },
+  { id:'AXL', color:'#7c3aed',
+    short:'事業の1→10を担うアクセラレーション',
+    long:'事業がある程度形になった後（SEED〜EXIT）のグロースを担う専門スタジオ。マーケ・セールス・ブランディング・プロトタイプ・TECH開発の5スタジオ体制で実務機能ごと入り込み、EXIT戦略まで一気通貫で支援する。',
+    challenges:[
+      { problem:'事業は立ち上がったが「1→10」で詰まっている', solution:'5スタジオ体制が実務機能として外から入り込む仮想出島スキームで、マーケ・セールス・開発を一気に動かす。NTTドコモ事例ではVCからの調達とスピンアウトを実現。' },
+      { problem:'グロースのためのマーケ・セールス人材が社内にいない', solution:'インサイドセールス・デジタルマーケ・LP制作・ウェビナー・展示会を実行機能として外から提供。アイシン事例ではリード0件→400件を達成。' },
+      { problem:'EXIT戦略（子会社化・カーブアウト・IPO）の進め方がわからない', solution:'選択肢の整理から資本政策・ガバナンス設計・経営合意形成まで一気通貫で支援。社内初のカーブアウトも複数実現している。' },
+    ],
+    approaches:[
+      'GTM戦略・インサイドセールス・デジタルマーケティング（LP/広告/ウェビナー/展示会）を実行レベルで担当',
+      'プロトタイプ→本開発のスタジオ体制（AXL TECH Studio・AXL PROTOTYPE Studio）で実働',
+      'EXIT戦略の選択肢整理（子会社化・カーブアウト・IPO）と資本政策立案・ガバナンス設計',
+      '仮想出島スキームによるハンズオン支援（大企業の中でスタートアップ的な速度を実現）',
+      '事業計画・組織・採用・財務・法務まで「1→10の全機能」をワンストップで提供',
+    ],
+    cases:[
+      { company:'アイシン', tag:'事業グロース', summary:'世界最小水粒子技術「AIR（アイル）」の事業化。Web経由新規リードほぼ0件→400件を獲得。理容美容向けLP制作・ウェビナー5回開催。EXIT戦略・資本政策の経営合意を完了。' },
+      { company:'NTTドコモ', tag:'ハンズオン支援', summary:'キャリア教育サービス「はたらく部」の事業立ち上げ。事業計画・セールス・マーケ・オペレーション全般をハンズオンで支援。VCからの資金調達に成功し、株式会社RePlayceとしてスピンアウト・会社化を実現。' },
+      { company:'ポーラ', tag:'PMF支援', summary:'事業立ち上げフェーズのPMF（製品市場適合）支援。顧客課題・ターゲット・カスタマージャーニーを再設計し、マーケティング効率2.4倍を達成。' },
+      { company:'トヨタ（WAVE BASE）', tag:'グロース支援', summary:'R&D発の材料データ分析サービスのグロース支援。グロース戦略のメンタリング・展示会出展・ウェビナー施策を実行し、必要アクションを明確化。' },
+    ],
+    whenUseful:[
+      { phase:'SEED', score:'◎', note:'採算構造・Opsの設計支援。AXLへの本格移行タイミング。' },
+      { phase:'ALPHA', score:'◎', note:'GTM設計・マーケ機能・インサイドセールス構築。' },
+      { phase:'BETA〜EXIT', score:'◎', note:'組織・採用・財務・EXIT戦略の一気通貫支援。' },
+      { phase:'投資判断', score:'○', note:'スケール事業への追加投資判断・グロースROI評価。' },
+    ]
+  },
+  { id:'UNIDGE', color:'#059669',
+    short:'マッチングで終わらないOI支援',
+    long:'外部スタートアップとの協業を設計・推進するオープンイノベーション専門の子会社。1000社超の独自DBを活用し、マッチング後の事業化・スケールまで一気通貫で伴走することが最大の特徴。大企業では解決できない課題を外部連携で突破する。',
+    challenges:[
+      { problem:'自社だけでは生まれないアイデアや技術が必要だが、協業候補が見つからない', solution:'1000社超の独自DBを活用し、戦略テーマに合う協業候補を探索・マッチング。自社起点・他社起点の両軸でアプローチする。' },
+      { problem:'OIプログラムを立ち上げたいがノウハウがない', solution:'プログラム設計（テーマ設定・審査基準・DemoDay設計）から実運営・DemoDay後の伴走まで全面支援。リコー・コーセー・JR西日本など多数の実績を持つ。' },
+      { problem:'マッチングで終わって事業化が進まない', solution:'「マッチングで終わらない」がUNIDGEの核心。PoC後の成果確認・事業仮説深掘り・本格化の判断まで一気通貫で伴走する。' },
+    ],
+    approaches:[
+      '1000社超の独自DBを活用した協業先探索・マッチング（自社起点・他社起点の両手法を提供）',
+      '協業事業開発の設計・推進（思いつきレベルのテーマ案から事業仮説へ引き上げる型を保有）',
+      'OIプログラム（アクセラレーションプログラム）の全面設計・運営（制度設計〜審査〜DemoDay後まで）',
+      'マッチング後の成果まで見据えた仮説検証伴走支援（PoCで止まらない成果主義）',
+      'AXL Studioとの連携によるDemoDay後の本格事業立ち上げ・グロース支援',
+    ],
+    cases:[
+      { company:'リコー', tag:'OIプログラム', summary:'アクセラレーションプログラム「TRIBUS」の設計・運営。外部スタートアップとの協業型事業創出を推進。' },
+      { company:'コーセー', tag:'OIプログラム', summary:'オープンイノベーションプログラム「LINK」の運営支援。美容・ヘルスケア領域のスタートアップとの協業を推進。' },
+      { company:'JR西日本', tag:'OIプログラム', summary:'事業共創プログラム「ベルナル」。交通・地域インフラ領域でのスタートアップとの協業事業開発を設計・推進。' },
+      { company:'SGホールディングス', tag:'OIプログラム', summary:'イノベーション推進プラットフォーム「HIKYAKU LABO」の運営。物流×スタートアップの協業創出を支援。累計80社超の支援実績。' },
+    ],
+    whenUseful:[
+      { phase:'WILL/ENTRY', score:'○', note:'外部スタートアップとの連携でアイデア探索を加速。' },
+      { phase:'MVP1', score:'○', note:'競合スタートアップ調査・共同課題検証。' },
+      { phase:'制度設計', score:'○', note:'OI型公募プログラムの設計。外部・内部案件の評価基準設計。' },
+      { phase:'組織・文化', score:'○', note:'スタートアップとの接触で社内を外向きにする文化醸成。' },
+    ]
+  },
+  { id:'R&D IC', color:'#ea580c',
+    short:'研究者を起業家にするR&D特化支援',
+    long:'製造業・化学・製薬などR&D組織向けの特化型センター。技術起点で事業を生み出すメソッドと、研修16種・知財ガイドライン・技術棚卸しWSで「研究者を起業家に」変える仕組みを提供する。センター長は元ライオン イノベーションラボ所長（5年間で50名の事業人材を輩出した実績を持つ）。',
+    challenges:[
+      { problem:'R&Dの成果が事業化されずに眠っている', solution:'技術棚卸しWSで20〜30の用途仮説を発散。「技術→用途→顧客課題→事業仮説」の逆引き思考で、眠っている技術を事業候補として引き出す。' },
+      { problem:'研究員が顧客視点を持てず事業仮説を作れない', solution:'顧客ヒアリング・プロトタイピング・ビジネスモデル等の研修16種を体系的に提供。研究者特有の強み（大量実験・失敗から成功を導く力）を起業家の強みに転換する。' },
+      { problem:'R&D組織向けの制度設計ノウハウが社内にない', solution:'TRL評価・知財ガイドライン・技術ロードマップ等のR&D特化型8論点を一括設計。元ライオン イノベーションラボ所長が組織変革を直接伴走する。' },
+    ],
+    approaches:[
+      '技術棚卸しWSで20〜30の用途仮説を発散し、TRL（技術熟度レベル）で事業化可能性を評価',
+      '「技術→用途仮説→顧客課題→事業仮説」の逆引き思考で顧客候補セグメントを導出',
+      '研究員向け事業開発研修16種（顧客ヒアリング・プロトタイピング・ビジネスモデル・知財戦略等）',
+      'R&D組織向け8論点制度設計（テーマ設定・審査基準・メンタリング体制・知財ガイドライン・技術ロードマップ等）',
+      'ネットワーク型組織への転換支援（トップダウン→起案者が自然にリーダーになれるフラットな組織設計）',
+      '元R&D組織のトップ経験者によるリーダー向けマネジメント支援（宣言・ビジョン設計・判断高速化）',
+    ],
+    cases:[
+      { company:'ライオン（センター長 宇野氏の実績）', tag:'組織変革', summary:'イノベーションラボを設立。「既存事業に関わる仕事はしません」を宣言し、ネットワーク型組織×デニムユニフォームで文化を変革。5年間で約50名の新規事業人材を輩出。研究員が「覚醒」し事業開発リーダーへと変貌する事例を多数創出。' },
+      { company:'トヨタ自動車（R&D連携）', tag:'制度設計', summary:'B-projectでR&D部門とイノベーション部門が共同開催・共同審査する体制を構築。異なる専門的視点で審査が可能になり、R&D発の事業候補の質と量が向上。' },
+    ],
+    whenUseful:[
+      { phase:'WILL/ENTRY', score:'◎', note:'技術棚卸しWSで20〜30の用途仮説を発散。TRL評価。' },
+      { phase:'MVP1', score:'◎', note:'技術起点の顧客候補マッピング・知財観点の検証設計。' },
+      { phase:'制度設計', score:'◎', note:'R&D組織向け8論点制度設計・技術ロードマップ作成。' },
+      { phase:'組織・文化', score:'◎', note:'研修16種で研究者を起業家に変える。元R&D所長が組織変革を支援。' },
+    ]
+  },
+  { id:'ASG', color:'#dc2626',
+    short:'企業変革のエコシステムを設計する戦略機能',
+    long:'「企業変革がどのフェーズにあるか（ほぼ更地→ヒトづくり→事業づくり→エコシステム）」を診断し、AD全体の支援を統合的に届けるアカウント戦略機能。イントラミドル（社内変革を推進できる中間管理職）を見つけ育て、全社的な新規事業エコシステムを実装する。',
+    challenges:[
+      { problem:'新規事業が単発で終わり全社的な仕組みにならない', solution:'企業変革フェーズ（Phase0〜3）を診断し、3〜5年のエコシステム実装ロードマップを経営提案として設計する。個別支援をバラバラに入れるのではなく、全体戦略として統合する。' },
+      { problem:'変革を推進できる社内人材（イントラミドル）が誰かわからない', solution:'知識・出世期待・熱意・愛社精神・社内政治力など8基準でスコアリングし、変革推進の核になる人物を特定・育成する。「誰に賭けるか」を明確にすることで推進力が生まれる。' },
+      { problem:'新規事業への経営コミットメントが単年度で終わる', solution:'ポートフォリオ可視化・投資判断レポーティング・軍戦略設計で、経営として継続的に関与できる体制と仕組みを設計する。' },
+    ],
+    approaches:[
+      '企業変革フェーズ診断（Phase0〜3：ほぼ更地→ヒトづくり→事業づくり→エコシステム）によるアカウント戦略策定',
+      'イントラミドル特定（知識・出世期待・熱意・愛社精神・社内政治力の8基準でスコアリング）と育成計画',
+      '経営層へのエコシステム提案（新規事業経営提案・ROI設計・ポートフォリオ可視化）',
+      'ADグループ全体の支援機能（Innovation/AXL/UNIDGE/R&D IC）を統合したアカウント設計',
+      '既存顧客の深耕戦略（他部門への展開・アップセル・新規提案パッケージ開発）',
+    ],
+    cases:[
+      { company:'ADグループ主要顧客（複数）', tag:'エコシステム設計', summary:'複数ドメインの支援をまたぐ顧客に対し、ADグループ全体の支援を一つの企業変革戦略として統合設計。「どのフェーズにいてどの機能をいつ使うか」の全体ロードマップを提供。' },
+    ],
+    whenUseful:[
+      { phase:'ALPHA〜BETA', score:'○', note:'既存事業部の顧客基盤・営業を借りる利害調整ファシリテーション。' },
+      { phase:'制度設計', score:'◎', note:'内部アクセラレーター設計・統括管理グループの役割定義。' },
+      { phase:'事業育成・接続', score:'◎', note:'既存事業部との橋渡しファシリテーション。販売検証設計。' },
+      { phase:'方針策定', score:'◎', note:'「軍で100億」戦略の設計。異次元投資型vs軍戦略型の判断。' },
+      { phase:'投資判断', score:'◎', note:'ポートフォリオ可視化・撤退基準のアライン。軍戦略の進捗レポーティング。' },
+    ]
+  },
+  { id:'AXFR', color:'#0891b2',
+    short:'効率化AIを超えた「収益進化AI」の実装',
+    long:'「AIを入れたが売上が増えない」経営層への処方箋。AX for Revenue Loop（AI Sprint→Plateau Detection→PI Injection→収益構造再設計）を継続的に回すことで、既存事業の収益構造を非連続に変える。効率化AI（コスト削減）ではなく収益創出AIを実装するのが核心。',
+    challenges:[
+      { problem:'AIを導入したが売上・収益が増えない', solution:'Plateau Detection（AI効果の停滞検知）で「なぜ収益に繋がっていないか」の根本原因を特定。PI Injection（パフォーマンス改善）で打ち手を挿入し、AX for Revenue Loopで継続的に改善し続ける。' },
+      { problem:'AI活用が効率化（コスト削減）どまりで収益創出に繋がらない', solution:'CCC（完成品構築コスト崩壊）×FPL（Full-Product Launch）のフレームで収益構造そのものを非連続に変える。「効率化AI」から「収益創出AI」への転換が核心。' },
+      { problem:'大企業のセキュリティ要件でAIが使いにくい', solution:'AX Dejima（社内情報をクラウドに出さない専用AI環境）を構築。機密情報を守りながら高度なAI活用を実現する大企業専用のインフラを提供する。' },
+    ],
+    approaches:[
+      'AX for Revenue Loop：AI Sprint（高速プロトタイプ）→Plateau Detection（効果の停滞を検知）→PI Injection（パフォーマンス改善）→収益構造再設計の4ステップを継続的に回す',
+      'CCC（Completion Cost Collapse＝完成品構築コスト崩壊）を活用した商品・サービスの収益構造の非連続変革',
+      'FPL（Full-Product Launch）アプローチで既存顧客向け新機能・新サービスのAI展開を高速化',
+      '大企業セキュリティ対応の専用AI環境「AX Dejima」の構築・運用（社内情報をクラウドに出さない設計）',
+      '収益進化診断（axfr.ai）による現状のAI活用レベルの可視化と優先改善ポイントの特定',
+    ],
+    cases:[
+      { company:'大企業向け実績（複数）', tag:'収益進化', summary:'AI導入済みだが収益連動していない企業に対し、AX for Revenue Loopを導入。既存事業のマネタイズ構造をAIで再設計し、収益成長を実現した事例複数。詳細は担当コンサルタントへ。' },
+    ],
+    whenUseful:[
+      { phase:'BETA〜EXIT', score:'◎', note:'AIで収益を非連続に加速。AXLのグロース支援と並行して導入。' },
+      { phase:'収益最大化', score:'◎', note:'「AIを入れたが売上が増えない」経営層への処方箋。CCC×FPL概念。' },
+      { phase:'Exit設計', score:'△', note:'EXIT後の既存事業収益構造のAI再設計。' },
+    ]
+  },
+];
+
+// ── 課題ベース ──
+const CHALLENGE_DATA = [
+  {
+    id:'system', icon:'🏗️',
+    title:'仕組みをつくりたい',
+    desc:'新規事業制度の設計・公募・ステージゲートを整えたい',
+    questions:[
+      { q:'公募制度がなく、アイデアを集める仕組みがない', domains:[
+        { d:'Innovation', score:2, approach:'公募制度を0から全面設計（テーマ設定・募集要項・審査基準・メンタリング体制）。起案者が集まる仕掛けと、エントリーしやすい設計を両立する。', tools:'公募制度設計WS・IncubationSuite導入・Founder Issue Fit WS' },
+        { d:'R&D IC',     score:1, approach:'R&D組織向けに特化した公募制度設計。技術棚卸しWSと組み合わせて技術起点のテーマを設定する。', tools:'技術棚卸しWS・R&D特化型公募制度設計' },
+        { d:'ASG',        score:0.5, approach:'全社エコシステムを見据えた制度設計方針と経営コミットメントの設計を担う。', tools:'エコシステムフェーズ診断・経営提案支援' },
+      ]},
+      { q:'ステージゲートが曖昧で撤退・投資判断ができない', domains:[
+        { d:'Innovation', score:2, approach:'各フェーズ（WILL/ENTRY→MVP1→MVP2→SEED）の通過基準・KPI・撤退条件を定義し、「多産多死」を実現するステージゲート体系を構築する。', tools:'ステージゲート設計WS・IncubationSuite（進捗管理）' },
+        { d:'ASG',        score:1, approach:'ポートフォリオ全体を可視化し、経営層が判断しやすいレポーティング体系を設計する。', tools:'ポートフォリオダッシュボード設計・経営レポーティング支援' },
+      ]},
+      { q:'制度はあるが形骸化して機能していない', domains:[
+        { d:'Innovation', score:2, approach:'既存制度を構造的に診断。評価基準刷新・応募ハードル低減・メンタリング強化の3点を中心にリニューアルする。', tools:'制度健全化診断WS・評価基準刷新・IncubationSuite' },
+        { d:'ASG',        score:1, approach:'制度を動かせる「イントラミドル（社内変革の鍵人物）」を特定・育成し、形骸化の根本原因を解決する。', tools:'イントラミドル特定8基準・育成プログラム設計' },
+      ]},
+      { q:'R&D・研究部門に特化した新規事業の仕組みがない', domains:[
+        { d:'R&D IC',     score:2, approach:'技術起点の新規事業に特化した8論点制度設計（テーマ設定・審査・メンタリング・知財・TRL評価・技術ロードマップ等）を一括支援。', tools:'R&D特化8論点設計WS・TRL評価フレーム・知財ガイドライン整備' },
+        { d:'Innovation', score:1, approach:'全社公募制度とR&D部門の評価体系を接続し、技術起点の候補がイノベーション部門にも届く設計を担う。', tools:'R&D×イノベーション部門連携設計' },
+      ]},
+    ]
+  },
+  {
+    id:'grow', icon:'📈',
+    title:'事業を育てたい・スケールさせたい',
+    desc:'個別の事業アイデアや立ち上がり事業の成長を加速させたい',
+    questions:[
+      { q:'事業アイデアはあるが顧客課題の検証が進まない', domains:[
+        { d:'Innovation', score:2, approach:'顧客ヒアリング設計・「課題の深さ」の検証・MVP設計まで伴走。起案者が自力で仮説を深掘りできるようにする。', tools:'Founder Issue Fit WS・顧客ヒアリング設計支援・MVPプランニング' },
+        { d:'AXL',        score:1, approach:'SEED移行を見据えたGTM戦略の設計・ターゲットセグメント特定を支援。', tools:'GTM設計WS・AXL PROTOTYPE Studio' },
+      ]},
+      { q:'PMFはできたが売上・ユーザーがスケールしない', domains:[
+        { d:'AXL',  score:2, approach:'5スタジオ体制（マーケ・セールス・ブランディング・プロトタイプ・TECH）で実務機能ごと入り込み、グロースの壁を実行レベルで突破する。', tools:'AXLマーケ/セールス/ブランディングスタジオ・GTM実行支援' },
+        { d:'AXFR', score:1, approach:'Plateau Detection（停滞検知）で詰まっている箇所を特定し、AI活用で収益加速を狙う。', tools:'AX for Revenue Loop・Plateau Detection・PI Injection' },
+      ]},
+      { q:'マーケ・セールスのリソースや機能が社内にない', domains:[
+        { d:'AXL',  score:2, approach:'インサイドセールス・デジタルマーケ・ウェビナー・LP制作まで実行機能として外から入り込む仮想出島スキーム。', tools:'AXLセールス/マーケスタジオ・LP制作・ウェビナー運営・広告配信' },
+        { d:'AXFR', score:0.5, approach:'AIを活用したマーケ効率化・収益化加速。', tools:'axfr.ai収益進化診断・AX for Revenue Loop' },
+      ]},
+      { q:'EXIT戦略（子会社化・カーブアウト・IPO）を設計したい', domains:[
+        { d:'AXL', score:2, approach:'EXIT戦略の選択肢整理・資本政策立案・ガバナンス設計・経営合意形成まで一気通貫で支援。', tools:'EXIT戦略設計WS・資本政策立案・投資家向け資料作成' },
+        { d:'ASG', score:1, approach:'経営ポートフォリオ全体からみたEXIT判断の設計。どの事業にどのタイミングでEXITするかの経営方針を整理する。', tools:'ポートフォリオ設計・経営提案支援' },
+      ]},
+    ]
+  },
+  {
+    id:'open', icon:'🤝',
+    title:'外部連携・OIを進めたい',
+    desc:'スタートアップとの協業・オープンイノベーションに課題がある',
+    questions:[
+      { q:'協業できるスタートアップ・パートナーを探したい', domains:[
+        { d:'UNIDGE', score:2, approach:'1000社超の独自DBと業界知見を活かして、戦略テーマに合う協業候補を探索・マッチング。自社起点・他社起点の両手法を提供する。', tools:'独自1000社DB・協業先探索WS・テーマ設定支援' },
+        { d:'Innovation', score:0.5, approach:'外部スタートアップを社内公募に組み込むOI型公募の設計・運営も対応。', tools:'OI型公募設計・外部連携審査基準設計' },
+      ]},
+      { q:'OI・アクセラレーションプログラムを設計・運営したい', domains:[
+        { d:'UNIDGE', score:2, approach:'プログラム設計（テーマ・審査基準・スケジュール・DemoDay設計）から実運営・DemoDay後の伴走まで全面支援。', tools:'プログラム設計WS・審査ファシリテーション・DemoDay運営' },
+        { d:'Innovation', score:0.5, approach:'社内公募との並走・連携プログラム設計のノウハウを提供する。', tools:'社内公募×OIプログラム設計' },
+      ]},
+      { q:'マッチングで終わって事業化が進まない', domains:[
+        { d:'UNIDGE', score:2, approach:'「マッチングで終わらない」が最大の特徴。PoC後の成果確認・事業仮説深掘り・本格化の判断まで伴走する。', tools:'PoC伴走支援・事業仮説設計・事業開発ファシリテーション' },
+        { d:'AXL',   score:1, approach:'DemoDay後に本格スケールが見えてきた事業を、AXL Studioがグロース支援として引き継ぐ。', tools:'AXLスタジオ連携・GTM実行支援・EXIT設計' },
+      ]},
+    ]
+  },
+  {
+    id:'culture', icon:'🌱',
+    title:'人材・組織・文化を変えたい',
+    desc:'起案者育成・組織変革・イノベーション文化の醸成に課題がある',
+    questions:[
+      { q:'新規事業に挑戦する人材（起案者）が出てこない', domains:[
+        { d:'Innovation', score:2, approach:'起案者が出てこない原因を診断し、Founder Issue Fit WSで「なぜ自分か（Why you?）」を深掘りする起案者発掘・育成を伴走支援。', tools:'Founder Issue Fit WS・マインド醸成セミナー・公募制度設計' },
+        { d:'ASG',        score:1, approach:'イントラミドルを特定・育成し、起案者が出やすい組織土壌を上から整える。', tools:'イントラミドル特定8基準・育成設計' },
+        { d:'R&D IC',     score:0.5, approach:'R&D組織の研究員に新規事業への挑戦を促す研修・WSを提供。研究者の強みを起業家の強みに変換する。', tools:'研究員向け事業開発研修16種' },
+      ]},
+      { q:'R&D・研究員の新規事業リテラシーを高めたい', domains:[
+        { d:'R&D IC',     score:2, approach:'研究員向けに特化した事業開発研修16種（顧客ヒアリング・プロトタイピング・ビジネスモデル・知財戦略等）を体系的に提供。元R&D組織のトップが伴走する実践型プログラム。', tools:'事業開発研修16種・技術棚卸しWS・TRL評価研修' },
+        { d:'Innovation', score:1, approach:'全社公募とR&D研修を連動させ、研修後すぐ実践できる場を設計する。', tools:'R&D×公募制度連携設計' },
+      ]},
+      { q:'新規事業推進の鍵になる社内人材を特定したい', domains:[
+        { d:'ASG',        score:2, approach:'イントラミドル（知識・出世期待・熱意・愛社精神・社内政治力の8基準でスコアリング）を特定し、その人物を軸にした変革推進体制を設計する。', tools:'イントラミドル特定8基準スコアリング・推進体制設計WS' },
+        { d:'Innovation', score:0.5, approach:'公募制度の中で自然に浮かび上がるイントラミドル候補を可視化する仕組みを組み込む。', tools:'IncubationSuite（起案者データ分析）' },
+      ]},
+      { q:'中長期の変革ロードマップを経営として描きたい', domains:[
+        { d:'ASG',        score:2, approach:'企業変革フェーズ（Phase0〜3：ほぼ更地→ヒトづくり→事業づくり→エコシステム）を診断し、3〜5年のロードマップを経営提案として設計する。', tools:'企業変革フェーズ診断・エコシステム設計・経営提案WS' },
+        { d:'Innovation', score:1, approach:'制度設計・起案者育成の観点から中期ロードマップに落とし込む具体的なマイルストーンを設計する。', tools:'新規事業制度ロードマップ設計' },
+      ]},
+    ]
+  },
+  {
+    id:'ai', icon:'🤖',
+    title:'AIで収益・事業を変えたい',
+    desc:'AI活用が効率化どまりで収益に繋がっていない',
+    questions:[
+      { q:'AIを導入したが売上・収益が増えない', domains:[
+        { d:'AXFR', score:2, approach:'Plateau Detection（AI効果の停滞検知）で収益に繋がっていない根本原因を特定。PI Injectionで打ち手を挿入し、AX for Revenue Loopで継続的に改善する。', tools:'AX for Revenue Loop・Plateau Detection・PI Injection・axfr.ai診断' },
+        { d:'AXL',  score:0.5, approach:'事業グロースの文脈でAI活用を組み込み、マーケ・セールス効率を上げる。', tools:'AXLマーケ/セールス スタジオ・AI活用GTM設計' },
+      ]},
+      { q:'既存事業の収益構造をAIで根本から変えたい', domains:[
+        { d:'AXFR', score:2, approach:'CCC（完成品構築コスト崩壊）×FPL（Full-Product Launch）のフレームで、既存事業の収益構造を非連続に変える設計を担う。効率化AIではなく収益創出AIの実装が核心。', tools:'CCC/FPL設計・収益構造再設計WS・AX for Revenue Loop' },
+        { d:'ASG',  score:0.5, approach:'経営戦略として「AI収益進化」を位置づけ、中長期ロードマップに組み込む。', tools:'経営提案支援・AI戦略ロードマップ設計' },
+      ]},
+      { q:'大企業のセキュリティ要件でもAIを安全に使える環境を整えたい', domains:[
+        { d:'AXFR', score:2, approach:'AX Dejima（社内情報をクラウドに出さない専用AI環境）を構築・運用。大企業の情報セキュリティ要件を満たしながら高度なAI活用を可能にする。', tools:'AX Dejima環境構築・セキュリティ設計・AIガバナンス支援' },
+      ]},
+    ]
+  },
+];
+
+const ROLE_DATA = [
+  { id:'founder', icon:'💡', name:'起案者', desc:'新規事業のアイデアを持ち、自分で前に進めたい',
+    phases:[
+      { id:'will', tag:'WILL/ENTRY', name:'アイデアを探している段階', desc:'何をやるか決まっていない。課題テーマを見つけたい。',
+        questions:[
+          { q:'「なぜ自分がこれをやるか」が言語化できていない',
+            domains:[
+              { d:'Innovation', score:2, approach:'Founder Issue FitのWSで「なぜ自分か」を深掘り。アイデア創出プログラムで事業テーマを設定。', tools:'IncubationSuite、ADコンサルタント伴走' },
+              { d:'R&D IC', score:2, approach:'技術起点の場合、技術棚卸しWSで20〜30の用途仮説を発散。TRLで事業化可能性を評価。', tools:'Tech Seed Ideation診断（axfr.ai）' },
+            ]},
+          { q:'自社の技術・アセットを事業の種にしたい',
+            domains:[
+              { d:'R&D IC', score:2, approach:'技術棚卸しWS→用途仮説発散→TRL評価の一気通貫。元R&D所長クラスのメンターが伴走。', tools:'R&D IC技術棚卸しWS、TRLフレーム' },
+              { d:'Innovation', score:2, approach:'技術起点でも「なぜ自分か・どの顧客課題か」に戻す問いかけ支援。', tools:'IncubationSuite、Founder Issue Fit WS' },
+              { d:'UNIDGE', score:1, approach:'自社技術に相性の良いスタートアップを探し、アイデア探索を加速。', tools:'UNIDGEマッチングDB' },
+            ]},
+          { q:'外部スタートアップとの連携でアイデアを探したい',
+            domains:[
+              { d:'UNIDGE', score:2, approach:'マッチングから共同PoC設計まで一気通貫でOI案件を設計。', tools:'UNIDGEマッチングDB、コーポレートアクセラレータープログラム' },
+              { d:'Innovation', score:1, approach:'OI案件を社内公募制度と接続し、内部起案者との組み合わせプログラムを設計。', tools:'Innovation×UNIDGE連携設計' },
+            ]},
+        ]},
+      { id:'mvp1', tag:'MVP1', name:'顧客・課題を検証している段階', desc:'顧客が本当にいるか確かめたい。課題が深いか確認したい。',
+        questions:[
+          { q:'顧客が本当に存在するか確認したい',
+            domains:[
+              { d:'Innovation', score:2, approach:'顧客ヒアリング設計・インタビューガイド作成・「課題が深いか」の判断基準を提供。', tools:'IncubationSuite、ADコンサルタント伴走' },
+              { d:'R&D IC', score:2, approach:'技術起点の顧客候補セグメンテーション。専門メンターが技術特性を踏まえてアドバイス。', tools:'R&D IC顧客仮説検証WS' },
+              { d:'UNIDGE', score:1, approach:'競合スタートアップが既に解いている課題かを調査し、差別化仮説を提供。', tools:'UNIDGE OIリサーチ' },
+            ]},
+          { q:'ヒアリングで何を聞けばいいかわからない',
+            domains:[
+              { d:'Innovation', score:2, approach:'質問設計・フィードバックの読み解き方を伴走。仮説→検証→更新のループを高速化する型を提供。', tools:'IncubationSuite、ヒアリング設計テンプレ' },
+            ]},
+          { q:'技術を持っているが顧客候補がイメージできない',
+            domains:[
+              { d:'R&D IC', score:2, approach:'「技術→用途→顧客」の逆引き思考で候補セグメントを洗い出す。', tools:'R&D IC技術×顧客マッピングWS' },
+              { d:'UNIDGE', score:1, approach:'同種技術を持つスタートアップの顧客事例を参照し、類似セグメントへの仮説を立てる。', tools:'UNIDGEスタートアップ事例DB' },
+            ]},
+        ]},
+      { id:'mvp2', tag:'MVP2', name:'解決策・試作品を検証している段階', desc:'プロトタイプが刺さるか確認したい。最初の顧客を決めたい。',
+        questions:[
+          { q:'試作品を作ったが、顧客に刺さっているかわからない',
+            domains:[
+              { d:'Innovation', score:2, approach:'MVP6レベル設計（どのレベルの試作を誰に見せるか）と顧客前での検証設計を伴走。', tools:'IncubationSuite、MVP設計フレーム' },
+              { d:'AXL', score:1, approach:'プロトタイプの製造・改善をAXL内スタジオで素早く支援。', tools:'AXL プロトタイプスタジオ' },
+              { d:'UNIDGE', score:1, approach:'外部スタートアップと共同でPoCを設計し、検証スピードを上げる。', tools:'UNIDGE共同PoC設計' },
+            ]},
+          { q:'最初に売る顧客（ターゲット）が絞れていない',
+            domains:[
+              { d:'Innovation', score:2, approach:'「最初の1社」を顧客セグメント・課題の深さ・支払い意欲の3軸で絞り込む支援。', tools:'IncubationSuite、顧客セグメンテーションWS' },
+              { d:'R&D IC', score:1, approach:'技術特性に合ったニッチファースト戦略を設計。', tools:'R&D ICニッチファースト設計' },
+            ]},
+        ]},
+      { id:'seed', tag:'SEED', name:'採算構造・事業モデルを確認している段階', desc:'事業として成立するか確かめたい。審査を通過したい。',
+        questions:[
+          { q:'採算が取れる構造か確認したい',
+            domains:[
+              { d:'AXL', score:2, approach:'単価・コスト・Opsの設計支援。採算合致後はAXLへ移行し本格支援を開始。', tools:'AXL 5スタジオ（ビジネスモデル）、アクセラレーションOS' },
+              { d:'Innovation', score:1, approach:'ステージゲート審査通過に向けた事業計画レビュー・KPI設計。', tools:'IncubationSuite、ステージゲート審査支援' },
+              { d:'R&D IC', score:0.5, approach:'技術起点の場合、この段階で知財戦略（ライセンス・特許）を整理しておく。', tools:'R&D IC知財専門支援' },
+            ]},
+          { q:'社内の利害調整が始まって難しくなってきた',
+            domains:[
+              { d:'ASG', score:0.5, approach:'SEED段階から「軍戦略」の仕込みを開始。既存事業部の利害関係マッピングと小さな販売検証設計。', tools:'ASG内部アクセラレーターフレームワーク' },
+              { d:'AXL', score:2, approach:'SEED移行後はAXLが主戦場。グロース機能を構築しながら社内連携も設計。', tools:'AXL 5スタジオ' },
+            ]},
+        ]},
+      { id:'alpha', tag:'ALPHA', name:'PMF（市場での再現性）を確認している段階', desc:'売れる構造を作りたい。販売を再現可能にしたい。',
+        questions:[
+          { q:'マーケティング・セールスをどう設計すればいいか',
+            domains:[
+              { d:'AXL', score:2, approach:'GTM戦略・マーケティング機能・インサイドセールス設計を5スタジオが一気通貫で支援。', tools:'AXL 5スタジオ（マーケ・セールス）、Acceleration OS' },
+              { d:'ASG', score:1, approach:'既存事業部の顧客基盤・営業組織を借りることでゼロから営業する必要をなくす「3ヶ月スポット販売検証」。', tools:'ASG内部アクセラレーターフレームワーク' },
+            ]},
+          { q:'既存事業部・社内の協力が得られない',
+            domains:[
+              { d:'ASG', score:1, approach:'「既存事業部の負荷をほぼゼロにした販売検証」→「やってみたら自分たちにもメリットがあった」を体験させるファシリテーション。', tools:'ASG利害関係マッピング、小さな販売検証設計' },
+            ]},
+        ]},
+      { id:'beta', tag:'BETA〜EXIT', name:'スケール・EXIT（子会社化等）を目指している段階', desc:'組織・採用・財務を整えたい。AIで収益を加速したい。',
+        questions:[
+          { q:'組織・採用・財務をどう整えるか',
+            domains:[
+              { d:'AXL', score:2, approach:'人的グロース機能全般（採用・組織・財務・法務・PR）を5スタジオが構築支援。', tools:'AXL 5スタジオ、Acceleration OS' },
+            ]},
+          { q:'AIを使って収益を非連続に伸ばしたい',
+            domains:[
+              { d:'AXFR', score:2, approach:'AX for Revenue Loop（AI Sprint→Plateau Detection→PI Injection→収益構造再設計）を導入。効率化AIを超えた収益進化AIの実装。', tools:'AXFR、AX Dejima（大企業セキュリティ対応）、AI Orchestration' },
+              { d:'AXL', score:2, approach:'AXLが人的グロース、AXFRがAI収益加速を並行担当。', tools:'AXL×AXFR連携モデル' },
+            ]},
+          { q:'子会社化・IPO・カーブアウトを考えている',
+            domains:[
+              { d:'AXL', score:2, approach:'EXIT戦略の選択肢整理、資本政策立案、ガバナンス設計、PMI支援。', tools:'AXL EXIT支援メニュー' },
+              { d:'AXFR', score:0.5, approach:'EXIT後の既存事業収益構造をAIで再設計。', tools:'AXFR収益進化診断（axfr.ai）' },
+            ]},
+        ]},
+    ]},
+  { id:'admin', icon:'⚙️', name:'統括・事務局', desc:'社内公募制度を設計・運営し、起案者を支援・管理する担当者',
+    phases:[
+      { id:'design', tag:'制度設計', name:'制度をゼロから設計したい', desc:'目的・ステージゲート・評価基準を設計する段階。',
+        questions:[
+          { q:'何のためにやるか・目的とゴールが曖昧',
+            domains:[
+              { d:'Innovation', score:2, approach:'イノベーション投資の目的言語化WS。「多産多死型か・キラー事業型か」の方針決定支援。', tools:'Innovationコンサルティング、ADステージゲート体系' },
+              { d:'ASG', score:2, approach:'「軍で100億」という経営目標の設定支援。統括管理グループの役割定義。', tools:'ASG内部アクセラレーターフレームワーク、経営戦略コンサル' },
+            ]},
+          { q:'ステージゲートの設計方法がわからない',
+            domains:[
+              { d:'Innovation', score:2, approach:'WILL/ENTRY〜EXITまでの体系的ステージゲート設計。各フェーズの通過基準・KPI・審査形式を一緒に設計。', tools:'ADステージゲート体系、IncubationSuite' },
+              { d:'R&D IC', score:2, approach:'R&D組織向け8論点（制度設計・テーマ設定・審査・メンタリング等）に基づくステージゲート設計。技術ロードマップとの接続も。', tools:'R&D IC制度設計コンサル、8論点フレーム' },
+              { d:'UNIDGE', score:1, approach:'OI型（外部スタートアップ参加型）のステージゲート設計。社内案件と外部案件の評価基準を分ける設計。', tools:'UNIDGEプログラム設計' },
+            ]},
+          { q:'研究組織（R&D）向けの制度を設計したい',
+            domains:[
+              { d:'R&D IC', score:2, approach:'技術ロードマップ作成・知財ガイドライン整備・研修16種セットで制度を一括設計。', tools:'R&D IC制度設計コンサル、研修16種、知財ガイドライン' },
+              { d:'Innovation', score:2, approach:'汎用的な公募制度とR&D ICの専門設計を組み合わせるハイブリッド設計。', tools:'Innovation×R&D IC連携設計' },
+            ]},
+        ]},
+      { id:'recruit', tag:'募集・周知', name:'社員への周知・巻き込みを強化したい', desc:'応募数を増やしたい。質の高い応募を集めたい。',
+        questions:[
+          { q:'社員が応募してくれない・盛り上がらない',
+            domains:[
+              { d:'Innovation', score:2, approach:'社内広報設計・キックオフイベント企画・経営者メッセージの言語化支援。初期成功体験を作る仕掛け。', tools:'Innovation社内広報支援、イベント設計' },
+              { d:'ASG', score:0.5, approach:'予算確保・トップコミットメント取り付けを「パイプライン可視化による意思決定高速化」として経営企画へ提案。', tools:'ASG提案フレームワーク' },
+            ]},
+        ]},
+      { id:'review', tag:'審査・メンタリング', name:'審査基準・伴走設計を見直したい', desc:'公平に評価したい。メンタリングの質を上げたい。',
+        questions:[
+          { q:'審査基準が曖昧で公平に評価できない',
+            domains:[
+              { d:'Innovation', score:2, approach:'評価基準設計（市場性・実現可能性・担当者の熱量のバランス）、審査委員会の設計。', tools:'IncubationSuite、ADメンタリングプログラム' },
+              { d:'R&D IC', score:1, approach:'技術系案件はTRL（技術熟度レベル）に基づく評価基準。元R&D所長・知財専門家が中立評価。', tools:'R&D IC TRLフレーム、専門メンター' },
+              { d:'ASG', score:1, approach:'パイプライン全体の可視化設計。「ステージゲートを進む案件が何件あるか」という経営報告設計。', tools:'ASGパイプライン管理ツール' },
+            ]},
+          { q:'メンタリングが機能していない',
+            domains:[
+              { d:'Innovation', score:2, approach:'ADコンサルタントによるメンタリング体制刷新。「問い続けるメンタリング」への転換設計。', tools:'ADメンタリングプログラム、伴走設計WS' },
+              { d:'UNIDGE', score:1, approach:'OI型案件へのメンタリングは2軸（内部・スタートアップ側）設計が必要。UNIDGE専門メンターを活用。', tools:'UNIDGE審査・メンタリング設計' },
+            ]},
+        ]},
+      { id:'growth', tag:'事業育成・接続', name:'有望案件をグロースにつなげたい', desc:'InnovationからAXLへのバトンタッチを設計したい。',
+        questions:[
+          { q:'InnovationからAXLへのバトンタッチがうまくいかない',
+            domains:[
+              { d:'AXL', score:2, approach:'SEED前後の移行基準設計・引き渡しオンボーディング。移行後も事務局が関与する設計でインセンティブを維持。', tools:'AXL連携プロセス、AXLオンボーディング' },
+              { d:'Innovation', score:1, approach:'「いつ移行するか」のトリガー設計（採算構造確認・PMFの兆し）と移行基準整備。', tools:'IncubationSuite、移行基準設計' },
+              { d:'ASG', score:2, approach:'既存事業部との橋渡しファシリテーション。小さな販売検証で協力者を作る設計が移行成否を分ける。', tools:'ASG利害調整フレームワーク、販売検証設計' },
+            ]},
+        ]},
+      { id:'improve', tag:'継続・改善', name:'制度を継続的に進化させたい', desc:'多産多死を実現したい。制度をPDCAしたい。',
+        questions:[
+          { q:'多産多死が実現できず、案件数が少ない',
+            domains:[
+              { d:'Innovation', score:2, approach:'多産多死の仕組み化（応募数・通過率・事業化率のKPI管理）、撤退基準の運用設計。', tools:'IncubationSuite、PDCAレポーティング' },
+              { d:'ASG', score:1, approach:'「ステージゲートを進む案件数」で軍戦略の進捗を経営に可視化。単一事業の大きさにとらわれないコミュニケーション設計。', tools:'ASGパイプライン可視化' },
+            ]},
+        ]},
+    ]},
+  { id:'exec', icon:'🏢', name:'経営層', desc:'新規事業投資の方針・組織・収益を経営として整えたい',
+    phases:[
+      { id:'strategy', tag:'方針策定', name:'新規事業への方針・目標を定めたい', desc:'なぜ今やるか。成功定義・時間軸・財務目標を決めたい。',
+        questions:[
+          { q:'「何億を目指すか」という目標が曖昧',
+            domains:[
+              { d:'ASG', score:2, approach:'「軍で100億」の戦略設計。独立採算可能な事業1つ→ポートフォリオ化→勝てる領域に集中投資という軍戦略を設計。', tools:'ASG経営戦略フレームワーク、書籍『新規事業の経営論』' },
+              { d:'Innovation', score:2, approach:'「異次元投資×トップコミット型」と「軍戦略型」の分岐判断支援。成功の定義・時間軸・体制の整合を取るコンサルティング。', tools:'Innovationコンサルティング' },
+            ]},
+          { q:'なぜ今、新規事業に投資するかが言語化できていない',
+            domains:[
+              { d:'Innovation', score:2, approach:'「なぜ今か」の経営文脈整理。既存事業の成熟度・市場変化・競合動向を踏まえたイノベーション投資の必要性を経営メッセージとして言語化。', tools:'Innovationコンサルティング、トップコミットメント設計' },
+              { d:'R&D IC', score:1, approach:'技術ロードマップと新規事業戦略の接続を通じてR&D投資の意義を経営として言語化。', tools:'R&D IC研究戦略コンサル' },
+            ]},
+        ]},
+      { id:'invest', tag:'投資判断', name:'どの事業に投資するか決めたい', desc:'ポートフォリオを整理したい。撤退基準を設計したい。',
+        questions:[
+          { q:'ポートフォリオ全体をどう管理するかわからない',
+            domains:[
+              { d:'ASG', score:2, approach:'ステージゲートを進む案件数という指標でポートフォリオを可視化。「多産多死型」「精鋭集中型」どちらの投資戦略が自社に合うかの判断支援。', tools:'ASGパイプライン可視化、ステージゲートレポーティング' },
+              { d:'Innovation', score:2, approach:'ステージゲートに基づく投資判断フレームワーク。各フェーズの通過基準・追加投資の条件・撤退基準を整備。', tools:'ADステージゲート体系、IncubationSuite' },
+              { d:'AXL', score:1, approach:'SEED以降のスケール事業への追加投資判断。グロース投資のROI評価とEXIT戦略の選択肢整理。', tools:'AXL EXIT支援' },
+            ]},
+          { q:'撤退基準がなく、事業を止められない',
+            domains:[
+              { d:'Innovation', score:2, approach:'撤退基準の設計（時間・金額・マイルストン未達条件の3軸）。撤退を「失敗」でなく「学習」として定着させる文化設計。', tools:'IncubationSuite、撤退基準設計WS' },
+              { d:'R&D IC', score:0.5, approach:'技術系案件のTRLに基づく撤退基準設定。技術的フィージビリティの再評価タイミングを制度に組み込む。', tools:'R&D IC TRLフレーム' },
+            ]},
+        ]},
+      { id:'culture', tag:'組織・文化', name:'イノベーション文化・組織を変えたい', desc:'挑戦する文化を作りたい。研究者を起業家にしたい。',
+        questions:[
+          { q:'社員が挑戦しない・失敗を恐れる文化を変えたい',
+            domains:[
+              { d:'Innovation', score:2, approach:'文化変革プログラム設計。心理的安全性・挑戦の可視化・小さな成功体験の設計。イノベーション推進体制の組織設計。', tools:'Innovationコンサルティング、NewsPicks Learning' },
+              { d:'UNIDGE', score:1, approach:'外部スタートアップとの接触で社内を外向きにする文化醸成。', tools:'UNIDGEプログラム' },
+              { d:'ASG', score:1, approach:'統括管理グループの人材要件整理（「社内政治を苦にしない・長期プロパー・嫌われ役でも好かれる人柄」）と推進体制設計。', tools:'ASG人材設計フレームワーク' },
+            ]},
+          { q:'研究組織（R&D）の人材を事業開発に向かわせたい',
+            domains:[
+              { d:'R&D IC', score:2, approach:'研修16種（技術起点の事業開発・知財戦略・顧客ヒアリング等）。元R&D所長による組織変革支援。', tools:'R&D IC研修16種、R&D ICインキュベーションスイート' },
+              { d:'Innovation', score:2, approach:'研究組織向け公募制度の設計支援。仕組みとして文化を組織に埋め込む。', tools:'Innovation×R&D IC連携設計' },
+            ]},
+        ]},
+      { id:'revenue', tag:'収益最大化', name:'AIで既存事業の収益を最大化したい', desc:'AI導入したが売上が増えない。収益構造を根本的に変えたい。',
+        questions:[
+          { q:'AIを導入したが、売上・収益に結びついていない',
+            domains:[
+              { d:'AXFR', score:2, approach:'AX for Revenue Loop（AI Sprint→Plateau Detection→PI Injection→収益構造再設計）を継続的に回す。経営者本人がStep4に必ず関わる構造が重要。', tools:'AXFR、AX Dejima（大企業セキュリティ対応）、書籍『AI収益進化論』、収益進化診断（axfr.ai）' },
+            ]},
+          { q:'新規事業と既存事業をどう接続するか',
+            domains:[
+              { d:'AXFR', score:2, approach:'既存事業の収益構造をAIで変える。CCC（完成品構築コスト崩壊）を活用した全社的な収益進化を設計。', tools:'AXFR AX for Revenue、CCC概念' },
+              { d:'AXL', score:1, approach:'新規事業のBETA〜EXIT段階で既存事業との接続・グロース支援。', tools:'AXL EXIT支援' },
+            ]},
+        ]},
+      { id:'exit', tag:'Exit設計', name:'子会社化・IPO・カーブアウトを設計したい', desc:'生まれた事業をどう独立させるか。資本政策をどう設計するか。',
+        questions:[
+          { q:'子会社化・IPO・カーブアウトの選択肢を整理したい',
+            domains:[
+              { d:'AXL', score:2, approach:'EXIT戦略の選択肢整理、資本政策立案、ガバナンス設計、PMI支援。', tools:'AXL EXIT支援メニュー' },
+              { d:'ASG', score:0.5, approach:'10→100移管時の社内利害調整設計。既存事業部との役割分担・権限移譲のファシリテーション。', tools:'ASG利害関係調整フレームワーク' },
+              { d:'AXFR', score:0.5, approach:'EXIT後の既存事業収益構造をAIで再設計。収益進化診断で優先施策を特定。', tools:'AXFR収益進化診断（axfr.ai）' },
+            ]},
+        ]},
+    ]},
+];
+
+// all phases for phase-first entry
+const ALL_PHASES = [
+  { id:'will',     tag:'WILL/ENTRY', name:'アイデアの種を探している',      roles:['起案者'],              desc:'何をやるか決まっていない。課題テーマを見つけたい段階。' },
+  { id:'mvp1',     tag:'MVP1',       name:'顧客・課題を検証している',       roles:['起案者'],              desc:'顧客が本当にいるか確かめたい。課題の深さを確認したい。' },
+  { id:'mvp2',     tag:'MVP2',       name:'解決策・試作品を検証している',   roles:['起案者'],              desc:'プロトタイプが刺さるか確認したい。最初の顧客を決めたい。' },
+  { id:'seed',     tag:'SEED',       name:'採算構造・事業モデルを確認中',   roles:['起案者'],              desc:'事業として成立するか確かめたい。審査を通過したい。' },
+  { id:'alpha',    tag:'ALPHA',      name:'市場での再現性（PMF）を確認中', roles:['起案者'],              desc:'売れる構造を作りたい。販売を再現可能にしたい。' },
+  { id:'beta',     tag:'BETA〜EXIT', name:'スケール・EXITを目指している',  roles:['起案者'],              desc:'組織・採用・財務を整えたい。AIで収益を加速したい。' },
+  { id:'design',   tag:'制度設計',   name:'社内制度をゼロから設計したい',   roles:['統括・事務局','経営層'], desc:'目的・ステージゲート・評価基準を設計する段階。' },
+  { id:'recruit',  tag:'募集・周知', name:'社員への周知・巻き込みをしたい', roles:['統括・事務局'],        desc:'応募数を増やしたい。質の高い応募を集めたい。' },
+  { id:'review',   tag:'審査・メンタリング', name:'審査基準・伴走を見直したい', roles:['統括・事務局'], desc:'公平に評価したい。メンタリングの質を上げたい。' },
+  { id:'growth',   tag:'事業育成・接続', name:'有望案件をグロースにつなげたい', roles:['統括・事務局','経営層'], desc:'InnovationからAXLへのバトンタッチを設計したい。' },
+  { id:'improve',  tag:'継続・改善', name:'制度を継続的に進化させたい',     roles:['統括・事務局'],        desc:'多産多死を実現したい。制度をPDCAしたい。' },
+  { id:'strategy', tag:'方針策定',   name:'新規事業への方針・目標を定めたい', roles:['経営層'],             desc:'なぜ今やるか。成功定義・時間軸・財務目標を決めたい。' },
+  { id:'invest',   tag:'投資判断',   name:'どの事業に投資するか決めたい',   roles:['経営層'],              desc:'ポートフォリオを整理したい。撤退基準を設計したい。' },
+  { id:'culture',  tag:'組織・文化', name:'イノベーション文化・組織を変えたい', roles:['経営層','統括・事務局'], desc:'挑戦する文化を作りたい。研究者を起業家にしたい。' },
+  { id:'revenue',  tag:'収益最大化', name:'AIで既存事業の収益を最大化したい', roles:['経営層'],             desc:'AI導入したが売上が増えない。収益構造を変えたい。' },
+  { id:'exit',     tag:'Exit設計',   name:'子会社化・IPO・カーブアウト設計',  roles:['経営層'],             desc:'生まれた事業をどう独立させるか。資本政策を設計したい。' },
+];
+
+// ─── STATE ─────────────────────────────────────────────────────
+let history = [];
+// state per entry type
+let state = {};
+
+// ─── HELPERS ───────────────────────────────────────────────────
+const SCORE_LABELS = { 2:'主要サービス ◎', 1:'補完サービス ○', 0.5:'状況次第で活用 △' };
+
+function chevronRight() {
+  return `<svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" style="width:15px;height:15px;flex-shrink:0"><path d="M6 3l5 5-5 5"/></svg>`;
+}
+function chevronDown(extra) {
+  return `<svg class="dr-chev${extra||''}" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" style="width:15px;height:15px;flex-shrink:0"><path d="M3 6l5 5 5-5"/></svg>`;
+}
+
+function renderSteps(depth, max) {
+  let h = '';
+  const labels = ['切り口', 'しぼり込み', '課題', '支援内容'];
+  for (let i = 0; i < max; i++) {
+    const cls = i < depth ? 'done' : i === depth ? 'active' : '';
+    h += `<div class="step-dot ${cls}"></div>`;
+  }
+  h += `<span class="step-label">${labels[Math.min(depth, labels.length-1)]}</span>`;
+  document.getElementById('steps').innerHTML = h;
+  document.getElementById('back-btn').style.display = depth > 0 ? 'flex' : 'none';
+}
+
+function setBreadcrumbs(items) {
+  const el = document.getElementById('breadcrumbs');
+  if (!items || items.length === 0) { el.className = 'breadcrumbs'; return; }
+  el.className = 'breadcrumbs visible';
+  el.innerHTML = items.map((t,i) =>
+    (i > 0 ? '<span class="bc-sep">›</span>' : '') +
+    `<span class="bc-item">${t}</span>`
+  ).join('');
+}
+
+function setScreen(html) {
+  const el = document.getElementById('screen');
+  el.innerHTML = `<div class="fade">${html}</div>`;
+}
+
+// ─── SCREENS ───────────────────────────────────────────────────
+
+function renderEntry() {
+  history = []; state = {};
+  renderSteps(0, 2);
+  setBreadcrumbs([]);
+  setScreen(`
+    <div class="prompt">
+      <h2 style="font-size:22px">何から始めますか？</h2>
+      <p>学習の目的に合わせて選んでください。</p>
+    </div>
+    <div class="cards">
+      <div class="card" onclick="goBasicsEntry()">
+        <div class="card-icon">📖</div>
+        <div class="card-body">
+          <div class="card-title">事業開発の基礎を学ぶ</div>
+          <div class="card-desc">新規事業開発のフェーズ・概念・よくある誤解を体系的に理解する</div>
+        </div>
+        ${chevronRight()}
+      </div>
+      <div class="card" onclick="goADOverviewEntry()">
+        <div class="card-icon">🏢</div>
+        <div class="card-body">
+          <div class="card-title">ADの概要を知る</div>
+          <div class="card-desc">AlphaDriveのミッション・支援内容・実績・事例をざっくり把握する</div>
+        </div>
+        ${chevronRight()}
+      </div>
+      <div class="card" onclick="goDetailEntry()">
+        <div class="card-icon">🔍</div>
+        <div class="card-body">
+          <div class="card-title">ADの詳しい支援を切り口別にみる</div>
+          <div class="card-desc">立場・事業領域・フェーズから、ADの具体的な支援内容を深掘りする</div>
+        </div>
+        ${chevronRight()}
+      </div>
+    </div>
+  `);
+}
+
+function goDetailEntry() {
+  history.push('entry');
+  state.entryType = 'detail';
+  renderSteps(1, 3);
+  setBreadcrumbs(['ADの詳しい支援を切り口別にみる']);
+  setScreen(`
+    <div class="prompt">
+      <h2>どの切り口から入りますか？</h2>
+    </div>
+    <div class="cards">
+      <div class="card" onclick="goRoleEntry()">
+        <div class="card-icon">👤</div>
+        <div class="card-body">
+          <div class="card-title">立場・フェーズから探す</div>
+          <div class="card-desc">起案者・統括・経営のロールを選び、今の状況・フェーズに合ったAD支援を見つける</div>
+        </div>
+        ${chevronRight()}
+      </div>
+      <div class="card" onclick="goDomainEntry()">
+        <div class="card-icon">🗂️</div>
+        <div class="card-body">
+          <div class="card-title">事業領域から入る</div>
+          <div class="card-desc">Innovation・AXL・AXFRなど、特定の事業ドメインを深く理解する</div>
+        </div>
+        ${chevronRight()}
+      </div>
+      <div class="card" onclick="goChallengeEntry()">
+        <div class="card-icon">💬</div>
+        <div class="card-body">
+          <div class="card-title">課題・悩みから入る</div>
+          <div class="card-desc">「仕組みがない」「スケールしない」など今の課題から、ADのどの支援が効くか探す</div>
+        </div>
+        ${chevronRight()}
+      </div>
+    </div>
+  `);
+}
+
+// ── 立場起点 ──
+function goRoleEntry() {
+  history.push('detail');
+  state.entryType = 'role';
+  renderSteps(1, 4);
+  setBreadcrumbs(['立場から入る']);
+  setScreen(`
+    <div class="prompt">
+      <h2>立場を選んでください</h2>
+    </div>
+    <div class="cards">
+      ${ROLE_DATA.map((r,i) => `
+        <div class="card" onclick="goRolePhase(${i})">
+          <div class="card-icon">${r.icon}</div>
+          <div class="card-body">
+            <div class="card-title">${r.name}</div>
+            <div class="card-desc">${r.desc}</div>
+          </div>
+          ${chevronRight()}
+        </div>
+      `).join('')}
+    </div>
+  `);
+}
+
+function goRolePhase(roleIdx) {
+  history.push('role-list');
+  state.roleIdx = roleIdx;
+  const role = ROLE_DATA[roleIdx];
+  renderSteps(2, 4);
+  setBreadcrumbs(['立場から入る', role.name]);
+  setScreen(`
+    <div class="prompt">
+      <h2>今、どんな状況ですか？</h2>
+    </div>
+    <div class="cards">
+      ${role.phases.map((p,i) => `
+        <div class="card" onclick="goRoleQuestion(${i})">
+          <div class="card-body">
+            <div class="card-tag">${p.tag}</div>
+            <div class="card-title">${p.name}</div>
+            <div class="card-desc">${p.desc}</div>
+          </div>
+          ${chevronRight()}
+        </div>
+      `).join('')}
+    </div>
+  `);
+}
+
+function goRoleQuestion(phaseIdx) {
+  history.push('role-phase');
+  state.phaseIdx = phaseIdx;
+  const role = ROLE_DATA[state.roleIdx];
+  const phase = role.phases[phaseIdx];
+  renderSteps(3, 4);
+  setBreadcrumbs(['立場から入る', role.name, phase.tag]);
+  setScreen(`
+    <div class="prompt">
+      <h2>具体的な悩みは？</h2>
+    </div>
+    <div class="cards">
+      ${phase.questions.map((q,i) => `
+        <div class="card" onclick="goRoleResult(${i})">
+          <div class="card-body">
+            <div class="card-title">${q.q}</div>
+          </div>
+          ${chevronRight()}
+        </div>
+      `).join('')}
+    </div>
+  `);
+}
+
+function goRoleResult(qIdx) {
+  history.push('role-question');
+  const role = ROLE_DATA[state.roleIdx];
+  const phase = role.phases[state.phaseIdx];
+  const q = phase.questions[qIdx];
+  renderSteps(4, 4);
+  setBreadcrumbs(['立場から入る', role.name, phase.tag]);
+  renderResult(q, `「${q.q}」への支援`);
+}
+
+// ── 事業領域起点 ──
+function goDomainEntry() {
+  history.push('detail');
+  state.entryType = 'domain';
+  renderSteps(1, 3);
+  setBreadcrumbs(['事業領域から入る']);
+  setScreen(`
+    <div class="prompt">
+      <h2>どのドメインを理解しますか？</h2>
+    </div>
+    <div class="domain-grid">
+      ${DOMAIN_META.map((d,i) => `
+        <div class="domain-index-card" style="background:${d.color}" onclick="goDomainDetail(${i})">
+          <div class="dic-name">${d.id}</div>
+          <div class="dic-desc">${d.short}</div>
+        </div>
+      `).join('')}
+    </div>
+  `);
+}
+
+function goDomainDetail(domainIdx) {
+  history.push('domain-list');
+  state.domainIdx = domainIdx;
+  const d = DOMAIN_META[domainIdx];
+  renderSteps(2, 3);
+  setBreadcrumbs(['事業領域から入る', d.id]);
+  setScreen(`
+    <div class="domain-detail-header" style="background:${d.color}">
+      <div class="ddh-name">${d.id}</div>
+      <div class="ddh-desc">${d.long}</div>
+    </div>
+
+    <div class="domain-section">
+      <div class="domain-section-title" style="border-color:${d.color}">主に活躍するフェーズ・状況</div>
+      ${d.whenUseful.map(w => `
+        <div class="wu-row">
+          <span class="wu-phase">${w.phase}</span>
+          <span class="wu-score" style="color:${d.color}">${w.score}</span>
+          <span class="wu-note">${w.note}</span>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="domain-section">
+      <div class="domain-section-title" style="border-color:${d.color}">解決できる課題</div>
+      <div class="challenge-list">
+        ${d.challenges.map(c => `
+          <div class="challenge-item">
+            <div class="challenge-problem">
+              <span class="challenge-badge challenge-badge-problem">課題</span>
+              <span>${c.problem}</span>
+            </div>
+            <div class="challenge-solution">
+              <span class="challenge-badge challenge-badge-solution" style="background:${d.color}">解決法</span>
+              <span>${c.solution}</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="domain-section">
+      <div class="domain-section-title" style="border-color:${d.color}">具体的な支援アプローチ</div>
+      <ul class="approach-list">
+        ${d.approaches.map(a => `<li class="approach-item"><span class="approach-dot" style="background:${d.color}"></span>${a}</li>`).join('')}
+      </ul>
+    </div>
+
+    <div class="domain-section">
+      <div class="domain-section-title" style="border-color:${d.color}">支援事例</div>
+      <div class="case-cards">
+        ${d.cases.map(c => `
+          <div class="case-card">
+            <div class="case-card-header">
+              <span class="case-company">${c.company}</span>
+              <span class="case-tag" style="background:${d.color}20;color:${d.color}">${c.tag}</span>
+            </div>
+            <div class="case-summary">${c.summary}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <button class="restart-btn" onclick="goDetailEntry()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" style="width:15px;height:15px"><path d="M2 8a6 6 0 1 0 .5-2.5"/><path d="M2 3v3h3"/></svg>
+      切り口を選び直す
+    </button>
+  `);
+}
+
+// ── 課題起点 ──
+function goChallengeEntry() {
+  history.push('detail');
+  state.entryType = 'challenge';
+  renderSteps(1, 3);
+  setBreadcrumbs(['課題・悩みから入る']);
+  setScreen(`
+    <div class="prompt">
+      <h2>どのカテゴリの課題ですか？</h2>
+    </div>
+    <div class="cards">
+      ${CHALLENGE_DATA.map((cat, i) => `
+        <div class="card" onclick="goChallengeQuestions(${i})">
+          <div class="card-icon">${cat.icon}</div>
+          <div class="card-body">
+            <div class="card-title">${cat.title}</div>
+            <div class="card-desc">${cat.desc}</div>
+          </div>
+          ${chevronRight()}
+        </div>
+      `).join('')}
+    </div>
+  `);
+}
+
+function goChallengeQuestions(catIdx) {
+  history.push('challenge-list');
+  state.challengeCatIdx = catIdx;
+  const cat = CHALLENGE_DATA[catIdx];
+  renderSteps(2, 3);
+  setBreadcrumbs(['課題・悩みから入る', cat.title]);
+  setScreen(`
+    <div class="prompt">
+      <h2>具体的な悩みは？</h2>
+      <p>${cat.title}</p>
+    </div>
+    <div class="cards">
+      ${cat.questions.map((q, i) => `
+        <div class="card" onclick="goChallengeResult(${i})">
+          <div class="card-body">
+            <div class="card-title">${q.q}</div>
+          </div>
+          ${chevronRight()}
+        </div>
+      `).join('')}
+    </div>
+  `);
+}
+
+function goChallengeResult(qIdx) {
+  history.push('challenge-question');
+  const cat = CHALLENGE_DATA[state.challengeCatIdx];
+  const q = cat.questions[qIdx];
+  renderSteps(3, 3);
+  setBreadcrumbs(['課題・悩みから入る', cat.title]);
+  renderResult(q, `「${q.q}」への支援`);
+}
+
+// ── フェーズ起点 ──
+function goPhaseEntry() {
+  history.push('detail');
+  state.entryType = 'phase';
+  renderSteps(1, 3);
+  setBreadcrumbs(['フェーズ・状況から入る']);
+
+  // group by role
+  const groups = [
+    { label:'起案者', ids:['will','mvp1','mvp2','seed','alpha','beta'] },
+    { label:'統括・事務局', ids:['design','recruit','review','growth','improve'] },
+    { label:'経営層', ids:['strategy','invest','culture','revenue','exit'] },
+  ];
+
+  let html = `<div class="prompt"><h2>今の状況を選んでください</h2></div>`;
+  groups.forEach(g => {
+    const phases = ALL_PHASES.filter(p => g.ids.includes(p.id));
+    html += `<div class="section-title" style="margin:18px 0 8px">${g.label}</div>`;
+    html += `<div class="cards" style="margin-bottom:8px">`;
+    phases.forEach((p,i) => {
+      const allIdx = ALL_PHASES.indexOf(p);
+      html += `<div class="phase-index-card" onclick="goPhaseQuestion(${allIdx})">
+        <div style="flex:1">
+          <div class="pic-tag">${p.tag}</div>
+          <div class="pic-name">${p.name}</div>
+          <div class="pic-desc">${p.desc}</div>
+          <div class="pic-roles">${p.roles.map(r=>`<span class="pic-role-badge">${r}</span>`).join('')}</div>
+        </div>
+        ${chevronRight()}
+      </div>`;
+    });
+    html += '</div>';
+  });
+  setScreen(html);
+}
+
+function goPhaseQuestion(phaseAllIdx) {
+  history.push('phase-list');
+  state.phaseAllIdx = phaseAllIdx;
+  const p = ALL_PHASES[phaseAllIdx];
+
+  // collect all questions for this phase across all roles
+  let allQs = [];
+  ROLE_DATA.forEach(role => {
+    role.phases.forEach(ph => {
+      if (ph.id === p.id) {
+        ph.questions.forEach(q => {
+          if (!allQs.find(x => x.q === q.q)) allQs.push(q);
+        });
+      }
+    });
+  });
+
+  renderSteps(2, 3);
+  setBreadcrumbs(['フェーズ・状況から入る', p.tag]);
+  setScreen(`
+    <div class="prompt">
+      <h2>具体的な悩みは？</h2>
+      <p>${p.name}</p>
+    </div>
+    <div class="cards">
+      ${allQs.map((q,i) => `
+        <div class="card" onclick="goPhaseResult(${i})">
+          <div class="card-body">
+            <div class="card-title">${q.q}</div>
+          </div>
+          ${chevronRight()}
+        </div>
+      `).join('')}
+    </div>
+  `);
+  state._phaseQs = allQs;
+}
+
+function goPhaseResult(qIdx) {
+  history.push('phase-question');
+  const q = state._phaseQs[qIdx];
+  const p = ALL_PHASES[state.phaseAllIdx];
+  renderSteps(3, 3);
+  setBreadcrumbs(['フェーズ・状況から入る', p.tag]);
+  renderResult(q, `「${q.q}」への支援`);
+}
+
+// ── 共通：結果画面 ──
+function renderResult(q, title) {
+  const sorted = [...q.domains].sort((a,b) => b.score - a.score);
+  const cards = sorted.map((item, idx) => {
+    const color = DOMAIN_META.find(d => d.id === item.d)?.color || '#888';
+    const isSub  = item.score === 1;
+    const isOpt  = item.score === 0.5;
+    const cls    = isSub ? 'score-sub' : isOpt ? 'score-opt' : 'score-main';
+    const mark   = item.score === 2 ? '◎' : item.score === 1 ? '○' : '△';
+    const level  = SCORE_LABELS[item.score] || '';
+    const open   = idx === 0 ? ' open' : '';
+    const style  = item.score === 2
+      ? `background:${color}`
+      : `border-color:${color};color:${color}`;
+    return `
+      <div class="dr-card">
+        <div class="dr-top" onclick="toggleDetail(this)">
+          <div class="dr-score ${cls}" style="${style}">${mark}</div>
+          <div class="dr-meta">
+            <div class="dr-name" style="color:${color}">${item.d}</div>
+            <div class="dr-level">${level}</div>
+          </div>
+          ${chevronDown(open ? ' open' : '')}
+        </div>
+        <div class="dr-body${open}">
+          <div class="dr-section">
+            <div class="dr-label">ADのアプローチ</div>
+            <div class="dr-text">${item.approach}</div>
+          </div>
+          <div class="dr-section">
+            <div class="dr-label">活用ツール・メニュー</div>
+            <div class="dr-text">${item.tools}</div>
+          </div>
+          <button class="dr-domain-link" style="color:${color};border-color:${color}20;background:${color}08"
+            onclick="event.stopPropagation();goDomainDetail(${DOMAIN_META.findIndex(d=>d.id===item.d)})">
+            ${item.d} の支援アプローチ・事例を詳しく見る →
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  setScreen(`
+    <div class="result-q">${title}</div>
+    <div class="domain-results">${cards}</div>
+    <button class="restart-btn" onclick="goDetailEntry()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" style="width:15px;height:15px"><path d="M2 8a6 6 0 1 0 .5-2.5"/><path d="M2 3v3h3"/></svg>
+      切り口を選び直す
+    </button>
+  `);
+}
+
+function toggleDetail(el) {
+  el.nextElementSibling.classList.toggle('open');
+  el.querySelector('.dr-chev').classList.toggle('open');
+}
+
+// ─── BACK ──────────────────────────────────────────────────────
+// ─── AD OVERVIEW DATA ────────────────────────────────────────────
+
+const AD_OVERVIEW_TABS = [
+  {
+    id: 'about',
+    label: 'ADとは',
+    content: {
+      headline: '新規事業で日本を元気にする',
+      lead: 'VUCAの時代、かつて10年持ったヒット商品のライフサイクルは今や1年以下に短縮された。AlphaDriveは「企業変革の核は新規事業」という信念のもと、企業の代わりに事業をつくるのではなく、コーチングしながら伴走支援することにこだわる。',
+      purpose: '人の可能性をひらく',
+      strength: '全メンバーが社内新規事業の立ち上げ経験者。複雑性が高くセオリーが通用しない事業・組織開発のプロセスに対して、「経験者」としての強みをフルに活かし、強いオーナーシップを持って推進支援する。',
+      stats: [
+        { num: '260社以上', label: '企業内新規事業創出支援' },
+        { num: '23,800件', label: '事業アイデアを創出' },
+        { num: '250件以上', label: '事業化・会社化を実現' },
+      ],
+      caseExamples: [
+        '自治体向け引き継ぎ支援サービス（複合機器メーカー）',
+        'ヘアメイク用スマートミラー（家電メーカー）',
+        '音声配信プラットフォーム（広告会社）',
+        'シニア向け歩行支援ソリューション（飲料・食品メーカー）',
+        '経営人材・副業兼業人材紹介（金融機関）',
+      ]
+    }
+  },
+  {
+    id: 'challenges',
+    label: '解決する課題',
+    content: {
+      intro: 'ADが向き合う企業の課題は主に6つ。大企業を中心に、新規事業と組織の両面から支援する。',
+      challenges: [
+        { icon: '💡', title: 'アイデアが生まれない', desc: '新規事業のアイデア創出フェーズを支援。公募制度設計・ワークショップ・ステージゲート構築まで。' },
+        { icon: '🌱', title: 'プロジェクトが育たない', desc: '生まれたアイデアが事業化まで到達しない。個々の起案者への伴走メンタリングで事業を育てる。' },
+        { icon: '👥', title: '社内起業家・次世代リーダーが生まれない', desc: '事業開発を通した人材育成。挑戦するマインドセットと実践スキルを同時に鍛える。' },
+        { icon: '🔬', title: 'R&D技術がビジネスに活かせない', desc: '研究開発部門と事業開発の橋渡し。技術起点で顧客課題を見つけ事業化する専門支援。' },
+        { icon: '🔄', title: '事業を連続的に創出する仕組みがない', desc: '一度きりではなく、継続的にイノベーターが育つ仕組みと風土を設計・定着させる。' },
+        { icon: '🤝', title: 'オープンイノベーションが推進できない', desc: 'スタートアップ・大学・異業種との協業による事業開発を支援。UNIDGE（ユニッジ）が専門担当。' },
+      ]
+    }
+  },
+  {
+    id: 'services',
+    label: '支援体制',
+    content: {
+      intro: 'ADグループは、事業フェーズ・領域・目的に応じた専門組織を擁する。',
+      units: [
+        { name: 'AlphaDrive（親会社）', role: '新規事業開発支援の総合支援カンパニー。戦略策定・事務局支援・プログラム支援・全事業統括。', tag: '仕組みづくり全般' },
+        { name: 'AXL Studio', role: '0→1後の1→10フェーズに特化したスタジオ。立ち上げ期に特化したマネジメント・事業開発支援。', tag: '事業立上げ・成長' },
+        { name: 'R&D Incubation Center', role: '基礎研究から新規事業を生み出すR&D部門向け支援センター。研究者向け事業開発能力育成・技術ドリブン支援。', tag: 'R&D・技術起点' },
+        { name: 'UNIDGE（ユニッジ）', role: 'オープンイノベーション支援に特化した戦略子会社。協業事業開発・スタートアップのグロース支援。', tag: 'OI・協業' },
+        { name: 'ASG（アカウントストラテジーグループ）', role: '既存顧客のポートフォリオを広げる戦略コンサルティング。ADグループ全体の支援を統合的に活用。', tag: '全社戦略' },
+        { name: 'AlphaDrive Re:gion（地方）', role: '高知・関西・東海・新潟・琉球など地方拠点。地域創生×新規事業の支援。', tag: '地方創生' },
+      ]
+    }
+  },
+  {
+    id: 'cases',
+    label: '支援事例',
+    content: {
+      intro: '260社以上の支援実績から厳選した代表的な事例。',
+      cases: [
+        {
+          company: 'トヨタ自動車',
+          industry: '製造',
+          theme: 'B-project（社会課題起点の新規事業公募制度）',
+          type: '仕組みづくり',
+          results: ['2022年度の起案者総数3,500人以上', 'R&D部門との共同開催を実現', 'ステージゲートが全社のものさしとして定着'],
+          point: 'リーンスタートアップ→トヨタ生産方式など、企業固有の言葉に翻訳して浸透を図った。'
+        },
+        {
+          company: '三菱マテリアル',
+          industry: '非鉄金属',
+          theme: '社内新規事業初のカーブアウト実現支援',
+          type: '仕組みづくり＋伴走',
+          results: ['マネジメントガイドライン策定・ステージゲート構築', '財務計画・事業モデル構築の伴走', '社内初カーブアウトに向けた経営合意形成'],
+          point: '投資規模が大きくても過剰リスクを回避できる柔軟なプロセスを導入した。'
+        },
+        {
+          company: 'ロッテ',
+          industry: '食品',
+          theme: 'ミライノベーションプロジェクト強化',
+          type: '仕組みづくり＋伴走',
+          results: ['「誰でもできる」マインド醸成セミナー実施', '顧客課題の深掘り伴走メンタリング', '社員が主体的に動ける体制構築'],
+          point: '挑戦を歓迎する環境整備と、実践的なメンタリングを両立させた。'
+        },
+        {
+          company: 'アイシン',
+          industry: '自動車部品',
+          theme: '「AIR（アイル）」技術の新規事業グロース',
+          type: '事業開発伴走',
+          results: ['Web経由新規リードほぼ0件→400件獲得', '理容美容向けLPを制作・公開', 'EXIT戦略・資本政策支援'],
+          point: '技術はあるが事業化ができていない状態から、セールス・マーケを一気通貫で推進した。'
+        },
+        {
+          company: 'NTTドコモ',
+          industry: '情報通信',
+          theme: 'キャリア教育サービス「はたらく部」事業立ち上げ',
+          type: '事業開発伴走（ハンズオン）',
+          results: ['事業計画・セールス・マーケ・オペレーション全般を支援', 'VCからの資金調達に成功', '株式会社RePlayceとしてスピンアウト・会社化'],
+          point: '仮想出島スキームを活用し、大企業の中でスタートアップ的な速度を実現した。'
+        },
+      ]
+    }
+  },
+];
+
+function goADOverviewEntry() {
+  history.push('entry');
+  state.entryType = 'ad-overview';
+  state.adTab = 0;
+  renderSteps(1, 2);
+  setBreadcrumbs(['ADの概要を知る']);
+  renderADOverviewScreen();
+}
+
+function renderADOverviewScreen() {
+  const tab = AD_OVERVIEW_TABS[state.adTab];
+
+  const tabs = AD_OVERVIEW_TABS.map((t, i) =>
+    `<button class="phase-tab ${i === state.adTab ? 'active' : ''}" onclick="selectADTab(${i})">${t.label}</button>`
+  ).join('');
+
+  let body = '';
+  const c = tab.content;
+
+  if (tab.id === 'about') {
+    const statsHtml = c.stats.map(s => `
+      <div style="text-align:center;padding:12px 8px;background:var(--bg);border-radius:10px;flex:1;min-width:90px">
+        <div style="font-size:18px;font-weight:800;color:var(--text)">${s.num}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:3px;line-height:1.4">${s.label}</div>
+      </div>
+    `).join('');
+    const casesHtml = c.caseExamples.map(e => `<li style="font-size:12px;color:#444;margin-bottom:4px">${e}</li>`).join('');
+    body = `
+      <div style="background:var(--text);color:#fff;border-radius:12px;padding:16px;margin-bottom:18px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.5px;opacity:.7;margin-bottom:6px">PURPOSE</div>
+        <div style="font-size:18px;font-weight:800;margin-bottom:8px">${c.purpose}</div>
+        <div style="font-size:12px;opacity:.8;line-height:1.6">${c.headline}</div>
+      </div>
+      <div style="font-size:13px;color:#444;line-height:1.7;margin-bottom:18px">${c.lead}</div>
+      <div class="b-section-label">実績（2026年1月時点）</div>
+      <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">${statsHtml}</div>
+      <div class="b-section-label">ADの強み</div>
+      <div style="font-size:13px;color:#444;line-height:1.7;margin-bottom:18px">${c.strength}</div>
+      <div class="b-section-label">事業化・会社化された事例（一部）</div>
+      <ul style="padding-left:16px;margin:0 0 24px">${casesHtml}</ul>
+    `;
+  } else if (tab.id === 'challenges') {
+    const challHtml = c.challenges.map(ch => `
+      <div style="display:flex;gap:12px;padding:14px;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;margin-bottom:8px">
+        <div style="font-size:22px;flex-shrink:0">${ch.icon}</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;margin-bottom:4px">${ch.title}</div>
+          <div style="font-size:12px;color:#555;line-height:1.6">${ch.desc}</div>
+        </div>
+      </div>
+    `).join('');
+    body = `
+      <div style="font-size:13px;color:#555;margin-bottom:16px">${c.intro}</div>
+      ${challHtml}
+    `;
+  } else if (tab.id === 'services') {
+    const unitsHtml = c.units.map(u => `
+      <div style="padding:14px;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <div style="font-size:13px;font-weight:800">${u.name}</div>
+          <span style="font-size:10px;font-weight:700;padding:2px 8px;background:var(--bg);border-radius:4px;color:var(--muted);white-space:nowrap">${u.tag}</span>
+        </div>
+        <div style="font-size:12px;color:#555;line-height:1.6">${u.role}</div>
+      </div>
+    `).join('');
+    body = `
+      <div style="font-size:13px;color:#555;margin-bottom:16px">${c.intro}</div>
+      ${unitsHtml}
+    `;
+  } else if (tab.id === 'cases') {
+    const casesHtml = c.cases.map(cs => `
+      <div style="padding:14px;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <div style="font-size:14px;font-weight:800">${cs.company}</div>
+          <span style="font-size:10px;font-weight:700;padding:2px 8px;background:var(--bg);border-radius:4px;color:var(--muted)">${cs.industry}</span>
+          <span style="font-size:10px;font-weight:700;padding:2px 8px;background:#eff6ff;border-radius:4px;color:#2563eb">${cs.type}</span>
+        </div>
+        <div style="font-size:12px;color:#333;font-weight:600;margin-bottom:8px">${cs.theme}</div>
+        <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.5px;margin-bottom:5px">RESULTS</div>
+        <ul style="padding-left:14px;margin:0 0 10px">${cs.results.map(r => `<li style="font-size:12px;color:#444;margin-bottom:3px">${r}</li>`).join('')}</ul>
+        <div style="font-size:12px;color:#555;background:var(--bg);padding:8px 10px;border-radius:6px;line-height:1.6">${cs.point}</div>
+      </div>
+    `).join('');
+    body = `
+      <div style="font-size:13px;color:#555;margin-bottom:16px">${c.intro}</div>
+      ${casesHtml}
+    `;
+  }
+
+  setScreen(`
+    <div class="fade">
+      <div class="phase-tabs">${tabs}</div>
+      ${body}
+    </div>
+  `);
+}
+
+function selectADTab(idx) {
+  state.adTab = idx;
+  renderADOverviewScreen();
+}
+
+// ─── BASICS DATA ─────────────────────────────────────────────────
+
+const BASICS_PHASES = [
+  {
+    tab: '前提',
+    name: 'なぜ事業開発が必要か',
+    desc: 'VUCAの時代、製品ライフサイクルはかつての10年から3年以下に短縮された。人生100年時代に「自分で考え、顧客を見つけ、商売にする力」—新規事業開発マインドは、特定の人だけでなくすべてのビジネスパーソンに必要なスキルになっている。',
+    focus: '新規事業開発とは何か、なぜ今すべてのビジネスパーソンに必要なのかを掴む',
+    myths: [
+      { bad: '新規事業開発は特別な才能がある人だけがするもの',
+        good: '「自分で考えたことに自分で顧客を見つけ自分で商売にする」能力は定年後にも通用する唯一のスキル。新規事業開発マインドはすべてのビジネスパーソンに必要。特別な才能より、顧客の元へ足を運ぶ意思が問われる。' },
+      { bad: '新規事業は「画期的なアイデア」から生まれる',
+        good: 'AppleのiPhoneも、最初から全体像を描いていたわけではない。新規事業はアイデアからではなく、誰かの課題意識（不便・不満・不安・不足）から始まる。' },
+    ],
+    concepts: ['VUCA', '新規事業開発とは', '課題意識（不）']
+  },
+  {
+    tab: 'エントリー',
+    name: 'エントリーフェーズ',
+    desc: '「なぜ自分がこの課題に取り組むか（Why you?）」を確立し、助けたい顧客を発見し、その課題を深掘りする段階。ここで固めた軸がブレると、後の仮説検証で大量の手戻りが生まれる。',
+    focus: 'Why you? / 顧客発見 / 課題発見 の3つをブラさない状態にすること',
+    myths: [
+      { bad: 'まず「儲かるか？」を考える',
+        good: 'エントリー段階で「儲かるか？」を問うのはNG。最初に問うべきは「なぜあなたがこの課題に取り組むのか（Why you?）」。Why you?がない起案者は300回の仮説検証の途中で必ず折れる。' },
+      { bad: '優秀なビジネスマン的行動（確認・調査・会議・資料作成）に時間を使う',
+        good: '新規事業は「仮説を顧客に当て、短期間で300回改善を繰り返す」もの。会議室で答えを出そうとするのが最大の罠。今すぐ顧客のもとへ行く。' },
+      { bad: 'Willとは「やりたいこと（解決策）」への熱量のこと',
+        good: 'Willは解決策ではなく「顧客と課題」に向いていなければならない。解決策はどうせ変わる。解決策への熱量はピボットのたびに折れてしまう。原体験化を通じてWillを見つける。' },
+    ],
+    concepts: ['Will', 'Why you?', '原体験化', 'ゲンバとホンバ', '課題意識（不）', 'エントリーフェーズ']
+  },
+  {
+    tab: '仮説検証',
+    name: '初期仮説検証フェーズ',
+    desc: '解決策の仮説を立て、顧客に当て、フィードバックを受け取りピボットする。リーンキャンバスで思考を整理し、MVPの6レベルで最速検証を回す。「あとは作るだけ」という状況はほぼない。疑い続けることが重要。',
+    focus: '顧客に仮説をぶつけて改善するサイクルを、いかに速く大量に回せるか',
+    myths: [
+      { bad: '解決策が決まったらすぐビジネスモデルを作り込む',
+        good: 'ビジネスモデルは解決策が確定してから考える。解決策はどうせ変わるため、変わる前に作り込むのは無駄。エントリー段階でビジネスモデルを聞いても意味がない。' },
+      { bad: '「こんなサービスがあったら使いますか？」と顧客に聞く',
+        good: '顧客は「嘘をつく」——意図を察してポジティブな回答をする。聞くべきは意思ではなく「過去の行動と力学」。「最近〇〇したのはいつですか？なぜそうしたんですか？」と問う。' },
+      { bad: 'プロトタイプを作り込んでから顧客に見せる',
+        good: 'MVPの6レベルでは「Level3まで一切作らない」。最初は30文字の言葉（Paper MVP）でも検証できる。作り込んでから「想定と違う」となると、やり直す予算も時間も残らない。' },
+      { bad: '企画書が完成したら審査員にGO/NOGOを判断してもらう',
+        good: '企画書は仮説の集合体に過ぎない。「これは仮説です。こんなことを検証させてください」という姿勢が正しい。初期のビジネスプランがそのまま事業化する確率は極めて低い。' },
+    ],
+    concepts: ['仮説検証', 'LEAN STARTUP', 'リーンキャンバス', 'UVP', 'MVP', 'MVPの6レベル', 'ピボット', '顧客ヒアリング', 'プロトタイピング', '仮説検証リスト']
+  },
+  {
+    tab: '収益性実証',
+    name: '収益性実証フェーズ',
+    desc: '採算が取れる構造を「再現性を持って」証明する段階。「友達だから買ってくれた」ではなく、一定の方法で顧客獲得コストが計算できる状態。競争優位性と拡大仮説も固める。',
+    focus: '構造として再現できているか。なぜ自社が競合に勝てるか',
+    myths: [
+      { bad: '顧客が希望する価格（できるだけ安く）で売る',
+        good: '値付けは「顧客が捻出可能な最高金額」から設定し、その価格で売れる売り方を開発する。価格は下げられるが上げられない。高単価の余力が後の試練を乗り越える体力になる。' },
+    ],
+    concepts: ['収益性実証', '競争優位性', '拡大仮説', 'ビジネスモデル', 'マネタイズモデル', 'CAC', 'LTV', 'Primary Customer', 'イノベーター理論']
+  },
+  {
+    tab: '拡大・黒字化',
+    name: '拡大フェーズ〜黒字化フェーズ',
+    desc: '拡大ドライバーが特定でき、マーケティング・営業でスケールさせる時期。仮説の時代から「達成とコミット」の時代へと性質が変わる。数億円規模まで成長し黒字化を達成する。',
+    focus: '何が事業拡大のカギか（拡大ドライバー）。売上・利益にコミットして達成する',
+    myths: [
+      { bad: '事業計画書は一般的なフォーマット（競合分析・市場規模・KPI等）で作れる',
+        good: '新規事業の事業計画はゼロから手作りで事業構造（お金の入りと出）を表現する。決済者が見るのはROIの3要素：①黒字化後の利益規模 ②キャッシュボトム（累積投資額） ③スピード（黒字化までの年数）。これが魅力的でなければ投資は通らない。' },
+    ],
+    concepts: ['拡大ドライバー', '黒字化', '事業構造の5要素', 'ROI', 'キャッシュボトム', '事業計画', 'ストーリーライン']
+  },
+];
+
+const DICTIONARY = {
+  'VUCA': {
+    def: 'Volatility（変動性）・Uncertainty（不確実性）・Complexity（複雑性）・Ambiguity（曖昧性）の頭文字。現代のビジネス環境を表す言葉。以前はヒット商品で10年食えたが、今は製品ライフサイクルが3年以下に短縮された。だからこそ、常に新しい価値を創れる力が必要になった。',
+    eg: '例：スマートフォンの登場で、フィルムカメラ・携帯ゲーム機・カーナビなど多くの産業が数年で激変した。変化はさらに加速している。'
+  },
+  '新規事業開発とは': {
+    def: '「自分で考えたことに自分で顧客を見つけ自分で商売にする」こと。既存の仕事を改善するのとは異なり、存在しない市場・顧客を作り出す活動。人生100年時代において、定年後にも通用する唯一のスキルとも言われる。',
+    eg: '例：社内公募制度で採択されたアイデアを、顧客ヒアリング→MVP検証→販売→スケールと段階的に事業化していく一連のプロセス'
+  },
+  '課題意識（不）': {
+    def: '新規事業の出発点。「不便・不満・不安・不足」など、顧客が感じているネガティブな状態。画期的なアイデアではなく、誰かの「不」から事業は始まる。この「不」が深く・広く・解決されていないほど、事業機会として大きい。',
+    eg: '例：「飲食店の食材発注がFAXで面倒」「規格外野菜が廃棄されている」といった現場の不がビジネスの種になる'
+  },
+  'Will': {
+    def: '新規事業を推進するための「使命感」と「領域の掛け合わせ」。WillはソリューションではなくWhy（顧客・課題）に向いていなければならない。解決策は仮説検証を通じて変わり続けるため、解決策への熱量は折れやすい。',
+    eg: '例：「食品廃棄をなくしたい（課題への熱量）」はWill。「フードシェアアプリを作りたい（解決策への熱量）」はWillではなく、ピボットのたびに折れてしまう。'
+  },
+  'Why you?': {
+    def: 'なぜあなたがこの課題に取り組むのか、という問い。新規事業の最初期に問うべき最重要の問い。Why you?がない起案者は、300回の仮説検証・挫折の中で折れてしまう。「なぜ他の誰かではなく、自分がやるのか」を言語化できることが出発点。',
+    eg: '例：「自分自身が飲食店を経営していた」「家族が介護で苦労した経験がある」など、自分だからこそ取り組む理由'
+  },
+  '原体験化': {
+    def: 'Willを見つけるための方法。ゲンバ（課題の現場を直視する）とホンバ（先進技術・先進事例の空気感に触れる）を繰り返すことで、自分の課題意識と領域が明確になっていく。思考だけではWillは見つからない。',
+    eg: '例：実際に飲食店のキッチンに入り廃棄の現場を見る（ゲンバ）、フードテックのスタートアップのピッチを聞きに行く（ホンバ）'
+  },
+  'ゲンバとホンバ': {
+    def: '原体験化のための2つの行動。ゲンバは課題の現場を直視すること。ホンバはAI・テクノロジーなど先進領域の空気感や人に触れること。どちらか一方では不十分で、両方を繰り返すことでWillが育つ。',
+    eg: '例：ゲンバ＝病院に通い医療現場のリアルな課題を肌で感じる。ホンバ＝医療スタートアップのカンファレンスに参加し最新技術の動向を掴む。'
+  },
+  'エントリーフェーズ': {
+    def: '新規事業開発の最初期フェーズ。「思いつき→Why you?→顧客発見→課題発見→解決策仮説」を固める段階。ここでブレると後の検証で大量の手戻りが生まれる。ADのステージゲートではWILL/ENTRYフェーズに相当。',
+    eg: '例：「育児中の親が保育園探しで困っている（課題発見）→なぜ自分がこれに取り組むか（Why you?）→どんな解決策が考えられるか（仮説）」を固める段階'
+  },
+  '仮説検証': {
+    def: '「こうではないか」という仮説を立てて顧客に当て、フィードバックを受けて仮説を修正するサイクル。新規事業開発の本質。一度で当たることはほぼなく、300回繰り返すことで精度が上がる。「顧客課題→解決策→UVP」のどの仮説が間違いかを切り分けながら進む。',
+    eg: '例：「30〜40代の共働き家庭は夕食の献立決めに困っている（仮説）」→10人にヒアリング→「実は献立より買い物の手間が課題だった（修正）」'
+  },
+  'LEAN STARTUP': {
+    def: '連続的なイノベーションの手法をメソッド化したもの。「小さな仮説を顧客に大量にぶつけ、ビジネスプランにしていく」手法。Dropboxは最初、3分間の使い方動画（MVP）だけで需要を検証した。仮説→検証→学習→次の仮説のループが基本。',
+    eg: '例：サービスを作る前に「30文字の説明文」を見せて反応を見る。これがLEAN STARTUPの最小MVPアプローチ。'
+  },
+  'リーンキャンバス': {
+    def: '顧客不在を防ぐための初期ビジネスプラン整理ツール。「顧客→課題→UVP→ソリューション→マネタイズ」の順番で埋めることで、顧客と課題を中心に置いた思考ができる。100人いれば100通りの書き方がある自由度が特徴。',
+    eg: '例：大手企業がよく作る「市場分析→競合分析→ビジネスモデル」という順序は顧客不在に陥りやすい。リーンキャンバスはまず顧客とその課題から始める。'
+  },
+  'UVP': {
+    def: 'Unique Value Proposition（独自の提供価値）。顧客の課題が解決された「理想の状態」のこと。ソリューション（解決手段）の前にUVPを定義することで、より柔軟で本質的な解決策を設計できる。解決手段はどう変わってもUVPを満たせばよい。',
+    eg: '例：飲食店の「FAX発注が面倒」という課題のUVP＝「こだわり食材を維持しながら発注を楽にする」。解決手段はオンラインシステムでも、人力代行でもUVPさえ満たせばよい。'
+  },
+  'MVP': {
+    def: 'Minimum Viable Product（仮説検証可能な最小限の製品）。製品を作り込む前に、最小限の形で顧客に見せて検証するもの。30文字の言葉でも立派なMVPになる。目的は「作ること」ではなく「仮説を検証すること」。',
+    eg: '例：宅配サービスのアイデアを検証するとき、最初はアプリを作らず「LINEで注文を受けて人力で届ける（Concierge MVP）」で検証できる。'
+  },
+  'MVPの6レベル': {
+    def: 'MVPを速さと手軽さで6段階に分解したもの。Level1：Paper（30文字）/ Level2：Concierge（人力）/ Level3：Combination（既存ツール組み合わせ）/ Level4：Only Visual（見た目だけ）/ Level5：Prototype（プロトタイプツール）/ Level6：MVP（最低限の機能開発）。Level3までは一切作らない。',
+    eg: '例：フードデリバリーアプリのアイデアをLevel1で検証→「〇〇のものを自宅に届けます。月3000円」という紙1枚を見せて反応を見る'
+  },
+  'ピボット': {
+    def: '仮説検証の結果を受けて、方向を修正すること。仮説検証リストの運用そのもの。事業が成立するまでピボットの繰り返しが続く。失敗ではなく「正解に向かうプロセス」として捉える。ピボットの質と速度が成否を分ける。',
+    eg: '例：「法人向け人材採用サービス」で検証→「実は採用より育成の課題が深かった」→人材育成サービスにピボット'
+  },
+  '顧客ヒアリング': {
+    def: '顧客の本音を引き出すための対話手法。2つの落とし穴がある：①顧客はビジネスプランを否定しづらい ②顧客は嘘をつく（意図を察してポジティブな回答をする）。意思ではなく「過去の行動と力学」を聞くことが鍵。',
+    eg: 'よくある間違い：「こんなサービスがあったら使いますか？」→9割が「使う」と答えるが実際は使わない。正しい問い：「最近〇〇をしたのはいつですか？なぜその時にしたんですか？」'
+  },
+  'プロトタイピング': {
+    def: 'MVPを用いて「提供価値が顧客の課題を解決できるか」を確認する活動。目的は「モノを作ること」ではなく「検証すること」。MVPの6レベルを組み合わせて最速で検証する。',
+    eg: '例：新しいSaaSを開発する前に、スプレッドシートと人力で同じ価値を提供してみる（Level2: Concierge）。顧客の反応を見てから開発する。'
+  },
+  '仮説検証リスト': {
+    def: '顧客仮説・課題仮説・提供価値仮説・ソリューション仮説を分解して管理する運用ツール。「どの仮説が正しくてどれが間違っているか」を切り分けて検証できる。ピボット＝仮説検証リストの運用。',
+    eg: '例：顧客仮説「30代共働き世帯が課題を持っている」→検証結果「実は40代単身者の方が深い課題を持っていた」→顧客仮説を修正して再検証'
+  },
+  '収益性実証': {
+    def: '採算が取れる構造を「再現性を持って」証明すること。「友達だから買ってくれた」ではなく、一定の方法で顧客獲得コストが計算できる状態。売上が費用を恒常的に上回る構造の確立。',
+    eg: '例：「5人の知人に買ってもらえた（再現性なし）」ではなく「Google広告でCPA3000円で10人獲得できた（再現性あり）」が収益性実証'
+  },
+  '競争優位性': {
+    def: '「マネされない」または「マネされても負けない」こと。初期ユーザー獲得で濃いファンができてブランド価値が高まること、顧客データが貯まるほどサービスの質が向上すること、などが競争優位性になる。',
+    eg: '例：Amazonの競争優位性＝圧倒的な商品数・配送速度・レビューデータの蓄積。これをゼロから複製するコストは天文学的になる。'
+  },
+  '拡大仮説': {
+    def: '収益性が実証できた後に、どう事業を広げるかの仮説。「顧客層拡大（最初のターゲット以外の顧客を獲得）」か「提供サービス拡大（同じ顧客にもっと多くのサービスを提供）」の2方向がある。',
+    eg: '例：最初に飲食店向けに展開→顧客層拡大：小売店にも展開 / 提供サービス拡大：発注に加えて在庫管理機能を追加'
+  },
+  'ビジネスモデル': {
+    def: '「なぜ儲かるのか、その理由となる構造」。儲かるとは「同じことを他社がやるよりその人・会社がやった方が大きな利益が残る構造を持つ」こと。高く売る・安く作る/届けるが基本原理。解決策が固まってから設計する。',
+    eg: '例：Airbnbのビジネスモデル＝空き部屋を持つオーナー×宿泊場所を探す旅行者をマッチング。在庫（宿泊施設）を持たずに規模を拡大できる構造が強み。'
+  },
+  'マネタイズモデル': {
+    def: '「高額さに気が付かなくさせる名目・価格のセット」。主に3種類：①無制限・都度課金型（一部の高額課金者が利益源）②月額課金型・サブスクリプション型（未利用顧客が利益源）③高額・成果報酬型（成果が出るタイミングで支払い）。',
+    eg: '例：Spotifyは月額980円のサブスクリプション型。1曲ごとに課金すると意識するより「聴き放題」の方が多く支払ってしまう心理効果がある。'
+  },
+  'CAC': {
+    def: 'Customer Acquisition Cost（顧客獲得コスト）。1人の顧客を獲得するためにかかるコスト。CAC < LTV（顧客生涯価値）が成り立つ施策を見つけることが事業成立の基本条件。',
+    eg: '例：広告費100万円で100人の顧客を獲得 → CAC＝1万円。この1万円以上のLTVが得られれば利益になる。'
+  },
+  'LTV': {
+    def: 'Life Time Value（顧客生涯価値）。1人の顧客が生涯を通じてもたらす利益。CAC < LTVが事業成立の基本条件。サブスクリプションモデルではLTVが高くなりやすい。',
+    eg: '例：月額1万円のサービスで平均2年間継続する顧客のLTV＝24万円。CAC（顧客獲得コスト）が10万円なら14万円の利益。'
+  },
+  'Primary Customer': {
+    def: '最初に買ってくれる理想の顧客。条件は「身内ではない・初めてサービスを知る・正規価格を支払う・使用して満足する」こと。Primary Customerを満足させることで次の顧客への口コミが生まれる。',
+    eg: '例：Airbnbの最初のPrimary Customer＝自宅のエアマットレスで泊めることに抵抗がない、ユニークな体験を求めるバックパッカー旅行者'
+  },
+  'イノベーター理論': {
+    def: '新商品の普及順序を示す理論。イノベーター（2.5%）→アーリーアダプター（13.5%）→アーリーマジョリティ→レイトマジョリティ→ラガードの順に普及する。最初のイノベーターを満足させることが大衆への普及のカギ。',
+    eg: '例：スマートフォンも最初は「こんな高い電話いらない」という人が多数派だった。最初期の熱狂的ユーザーの口コミが大衆への普及をけん引した。'
+  },
+  '拡大ドライバー': {
+    def: '事業を拡大するカギとなる要因。拡大フェーズに移行する前に、何が拡大のドライバーかが明確になっている必要がある。これが分からないまま拡大投資をしても効果が出ない。',
+    eg: '例：口コミが拡大ドライバーなら→既存顧客の満足度を最大化することに投資。広告が拡大ドライバーなら→効果的な広告クリエイティブの開発に投資。'
+  },
+  '黒字化': {
+    def: '売上がコストを恒常的に上回り、利益が出続ける状態。新規事業では「黒字化フェーズ」で事業が数億円規模に成長し、チームを増やせば売上も増える構造を作り上げる。',
+    eg: '例：最初の2年は赤字でも、黒字化フェーズでは「チームを増やせば売上も増える」という構造が確立されている状態'
+  },
+  '事業構造の5要素': {
+    def: 'お金の流れをバケツと水で表現した概念。①構造的収入（蛇口から出る水）②収入連動支出（側から漏れる水：決済手数料等）③構造的支出（底の穴：人件費・家賃）④臨時収入⑤臨時支出。新規事業はまず蛇口の水（収入）が止まった状態からスタートする。',
+    eg: '例：月額SaaSの事業構造：構造的収入＝月額利用料×ユーザー数、構造的支出＝エンジニア人件費＋サーバー費、収入連動支出＝決済手数料'
+  },
+  'ROI': {
+    def: 'Return On Investment（投資対効果）。新規事業では3つの要素で評価される：①黒字化後の利益規模（何年でいくらの利益か）②キャッシュボトム（黒字化までに累積でいくら使うか）③スピード（黒字化まで何年かかるか）。この3つが魅力的でなければ投資決済は通らない。',
+    eg: '例：Aチーム（利益15億・5年・投資15億）vs Bチーム（利益30億・3年・投資30億）→どちらを選ぶかは会社の方針次第。Cチーム（利益10億・7年・投資50億）には誰も投資しない。'
+  },
+  'キャッシュボトム': {
+    def: 'ROIの構成要素の一つ。黒字化するまでに累積でいくらのお金を使うか（累積赤字額・累積投資額）を表す。キャッシュボトムが大きいほど投資リスクが高く、決済者の承認が難しくなる。',
+    eg: '例：月間赤字500万円×12ヶ月=6000万円のキャッシュボトムで黒字化できるかどうかが投資判断の一つの基準'
+  },
+  '事業計画': {
+    def: '新規事業立ち上げ前における計画の目的は2つ：①事業構造（お金の入りと出）を表現する ②ROIシミュレーションを行う。一般的なフォーマットではなく、ゼロから手作りで自社の事業構造を表現することが重要。',
+    eg: '例：「5年後に売上30億・利益10億を達成するために、初年度は〇〇を検証し、2年目に〇〇で黒字化、3年目から拡大投資する」という構造を表現する'
+  },
+  'ストーリーライン': {
+    def: '事業投資を獲得するプレゼンでは、情報を羅列するレポート形式ではなく、聞き手をファンにするストーリーとして構成することが重要。構成例：チーム紹介→テーマ→ビジョン→Why you→顧客と課題→検証結果→解決策→ビジネスモデル→事業計画→ロードマップ。',
+    eg: '例：「私たちはXという課題を持つYという顧客に出会いました。Zという解決策を検証したら、顧客はこう言ってくれました。だから私たちはこのビジネスを作ります」という物語の構造'
+  },
+};
+
+// ─── BASICS FUNCTIONS ─────────────────────────────────────────────
+
+function goBasicsEntry() {
+  history.push('entry');
+  state.entryType = 'basics';
+  state.basicsPhase = 0;
+  renderSteps(1, 2);
+  setBreadcrumbs(['事業開発の基礎を学ぶ']);
+  renderBasicsScreen();
+}
+
+function renderBasicsScreen() {
+  const phase = BASICS_PHASES[state.basicsPhase];
+
+  const tabs = BASICS_PHASES.map((p, i) =>
+    `<button class="phase-tab ${i === state.basicsPhase ? 'active' : ''}" onclick="selectBasicsPhase(${i})">${p.tab}</button>`
+  ).join('');
+
+  const myths = phase.myths.map(m => `
+    <div class="myth-card" onclick="toggleMyth(this)">
+      <div class="myth-top">
+        <span class="myth-badge" style="background:#fee2e2;color:#dc2626">誤解</span>
+        <span class="myth-text">${m.bad}</span>
+      </div>
+      <div class="myth-body">
+        <div class="myth-row">
+          <span class="myth-row-badge">実際は</span>
+          <span class="myth-row-text">${m.good}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  const chips = phase.concepts.map(c =>
+    `<span class="concept-chip" onclick="openDict('${c}')">${c}</span>`
+  ).join('');
+
+  setScreen(`
+    <div class="fade">
+      <div class="phase-tabs">${tabs}</div>
+      <div class="bph-phase">${phase.tab}</div>
+      <div class="bph-name">${phase.name}</div>
+      <div class="bph-desc">${phase.desc}</div>
+      <div class="bph-focus"><strong>このフェーズの焦点</strong>${phase.focus}</div>
+      ${phase.myths.length > 0 ? `
+        <div class="b-section-label">よくある誤解（クリックで解説）</div>
+        <div class="myth-list">${myths}</div>
+      ` : ''}
+      <div class="b-section-label">このフェーズのキーワード</div>
+      <div class="concept-chips">${chips}</div>
+    </div>
+  `);
+}
+
+function selectBasicsPhase(idx) {
+  state.basicsPhase = idx;
+  renderBasicsScreen();
+}
+
+function toggleMyth(el) {
+  el.querySelector('.myth-body').classList.toggle('open');
+}
+
+function openDict(term) {
+  const entry = DICTIONARY[term];
+  if (!entry) return;
+  document.getElementById('dict-term').textContent = term;
+  document.getElementById('dict-def').textContent = entry.def;
+  const egEl = document.getElementById('dict-eg');
+  egEl.innerHTML = entry.eg ? `<strong>例</strong>${entry.eg}` : '';
+  egEl.style.display = entry.eg ? '' : 'none';
+  document.getElementById('dict-overlay').classList.add('open');
+}
+
+function closeDict() {
+  document.getElementById('dict-overlay').classList.remove('open');
+}
+
+function goBack() {
+  const prev = history.pop();
+  if (!prev || prev === 'entry') { renderEntry(); return; }
+  if (prev === 'detail') { goDetailEntry(); return; }
+
+  if (state.entryType === 'role') {
+    if (prev === 'role-question') { goRolePhase(state.phaseIdx); state.phaseIdx = undefined; }
+    else if (prev === 'role-phase') { goRoleEntry(); state.roleIdx = undefined; }
+    else { goDetailEntry(); }
+  } else if (state.entryType === 'domain') {
+    if (prev === 'domain-list') { goDomainEntry(); }
+    else { goDetailEntry(); }
+  } else if (state.entryType === 'challenge') {
+    if (prev === 'challenge-question') { goChallengeQuestions(state.challengeCatIdx); }
+    else if (prev === 'challenge-list') { goChallengeEntry(); state.challengeCatIdx = undefined; }
+    else { goDetailEntry(); }
+  } else if (state.entryType === 'phase') {
+    if (prev === 'phase-question') { goPhaseQuestion(state.phaseAllIdx); }
+    else if (prev === 'phase-list') { goPhaseEntry(); }
+    else { goDetailEntry(); }
+  } else if (state.entryType === 'basics') {
+    renderEntry();
+  } else if (state.entryType === 'ad-overview') {
+    renderEntry();
+  } else if (state.entryType === 'detail') {
+    renderEntry();
+  } else {
+    renderEntry();
+  }
+}
+
+// Init
+renderEntry();
+</script>
+</body>
+</html>
