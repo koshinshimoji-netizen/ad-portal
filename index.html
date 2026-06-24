@@ -623,6 +623,8 @@ const CHALLENGE_DATA = [
 
 const ROLE_DATA = [
   { id:'founder', icon:'💡', name:'起案者', desc:'新規事業のアイデアを持ち、自分で前に進めたい',
+    subtypes:[
+      { id:'founder_free', icon:'💡', name:'自由発案型', desc:'自分のアイデアや課題意識を起点に、事業テーマを探している',
     phases:[
       { id:'will', tag:'WILL/ENTRY', name:'アイデアを探している段階', desc:'何をやるか決まっていない。課題テーマを見つけたい。',
         questions:[
@@ -719,7 +721,119 @@ const ROLE_DATA = [
             ]},
         ]},
     ]},
-  { id:'admin', icon:'⚙️', name:'統括・事務局', desc:'社内公募制度を設計・運営し、起案者を支援・管理する担当者',
+      { id:'founder_bizdev', icon:'🔬', name:'事業開発担当者', desc:'会社・部署から特定テーマの新規事業開発を任され、テーマ探索〜事業化を推進する担当者',
+        phases:[
+          { id:'bd_explore', tag:'テーマ探索', name:'取り組む事業テーマを特定したい', desc:'技術・アセット・市場機会から、攻めるべき事業テーマを見つけたい段階。',
+            questions:[
+              { q:'自社の強み（技術・アセット）からどの事業領域を狙えるかわからない',
+                domains:[
+                  { d:'R&D IC',     score:2, approach:'技術棚卸しWSで自社技術・アセットの用途仮説を20〜30発散。TRLとビジネス規模でマトリクス化し、攻めるべきテーマを絞り込む。元R&D所長クラスが伴走。', tools:'技術棚卸しWS・TRL評価・用途仮説発散・R&D IC技術×市場マトリクス' },
+                  { d:'UNIDGE',     score:1, approach:'類似技術・アセットを持つスタートアップの事業事例から、自社の「出口」候補を逆算する。', tools:'UNIDGEスタートアップ事例DB' },
+                  { d:'Innovation', score:1, approach:'「誰の・どんな課題を解くか」に引き戻すFounder Issue Fitでテーマ絞り込みを支援。', tools:'Founder Issue Fit WS' },
+                ]},
+              { q:'テーマが広すぎてどこから始めればよいかわからない',
+                domains:[
+                  { d:'Innovation', score:2, approach:'「課題の深さ×実現可能性×なぜ自分たちか」の3軸でテーマを絞り込み、最初の一歩（顧客ヒアリング設計）まで伴走支援。', tools:'IncubationSuite・顧客仮説設計WS' },
+                  { d:'R&D IC',     score:1, approach:'技術起点の場合、TRLと市場規模のマトリクスで短期・中期・長期の優先領域を整理する。', tools:'R&D IC技術×市場マトリクス' },
+                ]},
+            ]},
+          { id:'bd_verify', tag:'課題・市場検証', name:'仮説を顧客・市場で検証したい', desc:'設定テーマの顧客が実在するか、課題の深さを確認したい段階。',
+            questions:[
+              { q:'顧客ヒアリングをどう設計・実施すればよいかわからない',
+                domains:[
+                  { d:'Innovation', score:2, approach:'仮説設定→ヒアリング設計→「課題の深さ」判定の型を提供。Founder Issue Fitで起案者が自力で深掘りできるように伴走。仮説→検証→更新のループを高速化する。', tools:'IncubationSuite・ヒアリング設計テンプレ・Founder Issue Fit WS' },
+                ]},
+              { q:'競合・類似サービスが既にあるかどうか調べたい',
+                domains:[
+                  { d:'UNIDGE',     score:2, approach:'スタートアップ1000社超のDBで類似ソリューションを調査。「すでに解かれている課題か」「差別化できるか」を素早く判断できる情報を提供する。', tools:'UNIDGEスタートアップ事例DB・競合調査支援' },
+                  { d:'Innovation', score:1, approach:'競合がいても差別化できる仮説の立て方・顧客セグメントの切り分けを伴走支援。', tools:'IncubationSuite' },
+                ]},
+            ]},
+          { id:'bd_advance', tag:'事業化・スケール', name:'POC〜本格展開を推進したい', desc:'検証が一段落し、事業として立ち上げていきたい段階。',
+            questions:[
+              { q:'POCが終わったが本格展開への道筋が描けない',
+                domains:[
+                  { d:'AXL',        score:2, approach:'SEED〜ALPHA段階をAXL 5スタジオが一気通貫で支援。GTM設計・インサイドセールス・マーケ機能構築まで実行レベルで伴走する。', tools:'AXL 5スタジオ・Acceleration OS・GTM設計WS' },
+                  { d:'Innovation', score:1, approach:'SEED審査通過に向けた事業計画レビュー・KPI設計・撤退基準の整備を伴走支援。', tools:'IncubationSuite・ステージゲート審査支援' },
+                ]},
+              { q:'営業・マーケを担うリソースが社内にない',
+                domains:[
+                  { d:'AXL',  score:2, approach:'インサイドセールス・デジタルマーケ・LP制作・ウェビナー運営まで実行機能として外から入り込む「仮想出島」スキーム。事業フェーズに合わせて機能を段階的に構築。', tools:'AXLセールス/マーケスタジオ・LP制作・ウェビナー運営・広告配信' },
+                  { d:'AXFR', score:0.5, approach:'AIを活用したマーケ・セールス効率化で少ないリソースをカバーする。', tools:'axfr.ai収益進化診断・AX for Revenue Loop' },
+                ]},
+            ]},
+          { id:'bd_internal', tag:'社内推進', name:'社内の壁・調整に悩んでいる', desc:'経営や既存事業部の理解・協力を得るのが難しい段階。',
+            questions:[
+              { q:'社内で新規事業の優先度が低く、経営・上司を動かせない',
+                domains:[
+                  { d:'ASG',        score:2, approach:'「軍で100億」のロジックで経営が動くための提案設計。小さな成功事例を積み上げながら徐々に優先度を上げる段階設計。パイプライン可視化で経営判断を促す。', tools:'ASG経営提案フレームワーク・企業変革フェーズ診断・パイプライン可視化' },
+                  { d:'Innovation', score:1, approach:'「なぜ今か」の経営文脈を整理し、上司・経営を動かすロジックを一緒に言語化する支援。', tools:'Innovationコンサルティング・トップコミットメント設計' },
+                ]},
+              { q:'既存事業部の協力が得られずリソース・顧客へのアクセスができない',
+                domains:[
+                  { d:'ASG', score:2, approach:'既存事業部の「負荷をほぼゼロにした小さな販売検証」で「やってみたら自分たちにもメリットがあった」を体験させる。利害関係マッピングで協力者を特定し、摩擦なく巻き込む。', tools:'ASG利害関係マッピング・3ヶ月スポット販売検証' },
+                ]},
+            ]},
+        ]},
+      { id:'founder_rd', icon:'🧪', name:'R&D・研究員', desc:'技術・特許・研究成果を持ち、それを事業の種として活かしたい研究者・技術者',
+        phases:[
+          { id:'rd_inventory', tag:'技術棚卸し', name:'自分の技術が何に使えるか整理したい', desc:'保有技術・特許・研究成果を棚卸しし、事業化できる候補を特定したい段階。',
+            questions:[
+              { q:'自社技術・研究成果がどの市場・用途に使えるか整理できていない',
+                domains:[
+                  { d:'R&D IC',     score:2, approach:'技術棚卸しWSで用途仮説を20〜30発散。「何の技術か」ではなく「誰のどんな困りごとを解けるか」に翻訳する視点を訓練。TRL×市場規模マトリクスで優先領域を絞り込む。元R&D所長クラスが同じ言語で伴走。', tools:'技術棚卸しWS・用途仮説発散・TRL評価フレーム・R&D IC技術×市場マトリクス' },
+                  { d:'UNIDGE',     score:1, approach:'類似技術・アセットを持つスタートアップの事業事例DBを使い、「すでに誰かが似た技術で何を解いているか」を調査。自社技術の用途候補を逆算する。', tools:'UNIDGEスタートアップ事例DB・技術類似調査' },
+                ]},
+              { q:'特許はあるが、それが事業価値として高いかどうか判断できない',
+                domains:[
+                  { d:'R&D IC',     score:2, approach:'特許の技術的差別性と市場ニーズのギャップを診断。「守るための特許」か「攻めるための特許」かを整理し、競合対比で事業価値を可視化する。', tools:'特許価値診断・競合技術マッピング・R&D IC事業化評価' },
+                  { d:'UNIDGE',     score:1, approach:'同領域のスタートアップが特許をどう活用しているかを調査し、自社特許のポジショニングを整理する。', tools:'UNIDGEスタートアップ特許調査' },
+                ]},
+            ]},
+          { id:'rd_market', tag:'市場・顧客探索', name:'技術を必要としている顧客を見つけたい', desc:'「誰が・なぜ・いくら払うか」を技術側から逆引きで探していきたい段階。',
+            questions:[
+              { q:'技術の強みはわかるが、誰がどんな文脈で困っているかイメージできない',
+                domains:[
+                  { d:'R&D IC',     score:2, approach:'技術起点の「顧客仮説発散」で、想定される困りごとを10〜20個洗い出す。研究者が自分でヒアリングすると相手が忖度しやすいため、第三者（ADコンサルタント）が代理でヒアリングする形式を推奨。', tools:'顧客仮説発散WS・R&D ICヒアリング代行・Founder Issue Fit WS' },
+                  { d:'Innovation', score:1, approach:'「技術→課題→顧客」ではなく「顧客→課題→技術」の逆引き思考に切り替えるFounder Issue Fit支援。課題が深いかどうかの判定基準も提供。', tools:'Founder Issue Fit WS・顧客仮説検証設計' },
+                ]},
+              { q:'顧客候補にヒアリングしても「いいですね」で終わり、本音の課題が聞けない',
+                domains:[
+                  { d:'R&D IC',     score:2, approach:'研究者・技術者が顧客ヒアリングする際に起きやすい「評価モード」「社交辞令」問題を解消するヒアリング設計を提供。「課題の深さ」を測る質問設計と、第三者が中立で聞く体制を組む。', tools:'ヒアリング設計WS・課題深度測定フレーム・R&D ICヒアリング代行' },
+                  { d:'Innovation', score:1, approach:'ヒアリング後のデータ解釈支援。「本当に刺さっているか」の判断基準を伴走で提供する。', tools:'IncubationSuite・Issue Fit判定支援' },
+                ]},
+            ]},
+          { id:'rd_poc', tag:'事業化・POC', name:'技術を使ったPOCを進めたい', desc:'有望な用途候補が見つかり、試作・実証実験・初期顧客獲得を進めたい段階。',
+            questions:[
+              { q:'研究のPOCはできるが「事業としてのPOC設計」がわからない',
+                domains:[
+                  { d:'R&D IC',     score:2, approach:'研究POCと事業POCの違い（KPIが「技術的成立」から「顧客が金を払うか」に変わる）を整理。事業POC設計から初期顧客候補の選定・検証シナリオの構築まで伴走。', tools:'R&D IC事業POC設計・顧客候補選定支援・IncubationSuite' },
+                  { d:'Innovation', score:1, approach:'SEED審査を見据えた事業計画の骨格作り。技術者が苦手な「なぜ自分たちが・今・これを解くか」の言語化を支援。', tools:'IncubationSuite・Founder Issue Fit WS・SEED審査支援' },
+                ]},
+              { q:'技術的には成立したが、採算が取れる事業モデルが描けない',
+                domains:[
+                  { d:'R&D IC',     score:2, approach:'技術起点の事業モデル設計。価格設定・顧客へのデリバリーモデル・収益化タイミングを、実際の大企業R&D事業化事例をもとに設計する。', tools:'R&D IC事業モデル設計WS・収益化シミュレーション' },
+                  { d:'AXL',        score:1, approach:'初期営業・チャネル設計をAXLが支援。技術系サービスの初期顧客獲得とユニットエコノミクスの検証を実行レベルで伴走。', tools:'AXL GTM設計WS・初期顧客獲得支援' },
+                ]},
+            ]},
+          { id:'rd_internal', tag:'組織・社内調整', name:'研究部門と事業部門の壁を越えたい', desc:'社内の承認・リソース・協力を得て、研究から事業へ移行したい段階。',
+            questions:[
+              { q:'研究部門と事業部門でゴール・言語が違い、連携が進まない',
+                domains:[
+                  { d:'R&D IC',     score:2, approach:'R&D×事業部門の連携設計を専門とする支援。「技術の言語」と「事業の言語」を翻訳し、共通KPIと役割分担を設計。両組織のキーパーソンを巻き込むファシリテーションを提供。', tools:'R&D IC組織連携設計・部門間ファシリテーションWS' },
+                  { d:'ASG',        score:1, approach:'組織横断の利害関係マッピングで、協力者・障壁となる人・中立者を特定。動かすための順序と働きかけ方を設計する。', tools:'ASG利害関係マッピング・変革フェーズ診断' },
+                ]},
+              { q:'研究成果を事業化する評価・承認プロセスが社内に存在しない',
+                domains:[
+                  { d:'R&D IC',     score:2, approach:'R&D発の事業化専用ステージゲートの設計支援。「研究評価指標（論文・特許）」と「事業評価指標（顧客・収益）」を分離し、研究部門が使いやすい制度設計を行う。', tools:'R&D IC専用ステージゲート設計・評価基準設計WS' },
+                  { d:'Innovation', score:1, approach:'社内公募制度のR&D特化版設計。R&D部門向けの制度設計と事務局体制の立ち上げを支援。', tools:'IncubationSuite・R&D向け制度設計・Innovation制度コンサル' },
+                ]},
+            ]},
+        ]},
+    ]},
+  { id:'admin', icon:'⚙️', name:'統括・事務局', desc:'制度・プログラムの設計・運営に関わる担当者',
+    subtypes:[
+      { id:'admin_internal', icon:'⚙️', name:'社内公募担当', desc:'社内公募制度を設計・運営し、起案者を支援・管理する担当者',
     phases:[
       { id:'design', tag:'制度設計', name:'制度をゼロから設計したい', desc:'目的・ステージゲート・評価基準を設計する段階。',
         questions:[
@@ -777,6 +891,58 @@ const ROLE_DATA = [
             domains:[
               { d:'Innovation', score:2, approach:'多産多死の仕組み化（応募数・通過率・事業化率のKPI管理）、撤退基準の運用設計。', tools:'IncubationSuite、PDCAレポーティング' },
               { d:'ASG', score:1, approach:'「ステージゲートを進む案件数」で軍戦略の進捗を経営に可視化。単一事業の大きさにとらわれないコミュニケーション設計。', tools:'ASGパイプライン可視化' },
+            ]},
+        ]},
+      ]},
+      { id:'admin_oi', icon:'🤝', name:'OI・アクセラ担当者', desc:'外部スタートアップとの協業プログラムを設計・運営する担当者',
+        phases:[
+          { id:'oi_design', tag:'プログラム設計', name:'OI・アクセラプログラムを設計したい', desc:'テーマ設定・募集要項・審査基準・DemoDay設計など、プログラムの骨格を作りたい段階。',
+            questions:[
+              { q:'どのテーマ・課題領域でスタートアップを募集すればよいかわからない',
+                domains:[
+                  { d:'UNIDGE',     score:2, approach:'自社戦略と市場動向を組み合わせたテーマ設定WSを提供。「自社が勝てる協業領域」と「スタートアップにとって魅力的な条件」の両立が重要。1000社超のDBから先行事例を参照しながら具体的な募集テーマに落とし込む。', tools:'テーマ設定WS・UNIDGE独自DB・プログラム設計支援' },
+                  { d:'ASG',        score:0.5, approach:'経営戦略との接続を設計し、「なぜこのテーマで外部と協業するか」を経営が納得する言語で整理する。', tools:'ASG経営提案支援・戦略接続設計' },
+                ]},
+              { q:'審査基準・選定プロセスをどう設計すればよいかわからない',
+                domains:[
+                  { d:'UNIDGE',     score:2, approach:'審査基準設計から審査ファシリテーション・フィードバック設計まで全面支援。「事業性・技術性・協業余地」の3軸で評価する基準を自社向けにカスタマイズ。審査員の選定と役割設計も含めて提供。', tools:'審査基準設計WS・審査ファシリテーション・選考プロセス設計' },
+                ]},
+            ]},
+          { id:'oi_recruit', tag:'募集・マッチング', name:'質の高いスタートアップを集めたい', desc:'募集告知・スクリーニング・マッチングの精度を上げたい段階。',
+            questions:[
+              { q:'応募が集まらない・質の低いスタートアップしか来ない',
+                domains:[
+                  { d:'UNIDGE',     score:2, approach:'UNIDGE独自のネットワーク（1000社超のスタートアップDB）を活用したターゲットスカウトを実施。「待ちの応募募集」から「攻めのスカウト」に切り替え、質の高い候補を集める。告知媒体・メッセージング設計も支援。', tools:'UNIDGEスタートアップDB・スカウト支援・告知・PR設計' },
+                ]},
+              { q:'自社が求めるテーマに合うスタートアップの探し方がわからない',
+                domains:[
+                  { d:'UNIDGE',     score:2, approach:'テーマ×技術×ステージで絞り込んだスタートアップ候補リストを提供。類似テーマで協業実績がある企業の事例も合わせて提示し、「自社に合う協業パターン」の解像度を上げる。', tools:'UNIDGE独自DB・テーマ別スタートアップ探索・協業事例調査' },
+                  { d:'Innovation', score:0.5, approach:'社内公募と外部スタートアップを組み合わせたハイブリッド型の設計で、内外の候補を横断的にスクリーニングする仕組みを提供。', tools:'社内公募×OIプログラム連携設計' },
+                ]},
+            ]},
+          { id:'oi_support', tag:'伴走・POC支援', name:'採択後の事業化を前に進めたい', desc:'採択スタートアップとのPOC設計・進捗管理・壁打ちを行いたい段階。',
+            questions:[
+              { q:'採択後のPOCが進まず、担当者が何をすればよいかわからない',
+                domains:[
+                  { d:'UNIDGE',     score:2, approach:'POC設計段階から「本格導入の判断条件」を合意させる型を提供。自社側の担当者が伴走できるよう、進捗管理・壁打ち・フィードバックの仕組みをセットで設計する。UNIDGEのコンサルタントが共同伴走役として入るオプションも提供。', tools:'POC設計WS・進捗管理フレーム・UNIDGE共同伴走支援' },
+                  { d:'Innovation', score:0.5, approach:'スタートアップ側の事業仮説をFounder Issue Fitで深掘りし、POCのゴール設定を明確化する支援も提供。', tools:'Founder Issue Fit WS・POCゴール設計' },
+                ]},
+              { q:'スタートアップとの協業が自社担当者の工数を圧迫している',
+                domains:[
+                  { d:'UNIDGE',     score:2, approach:'プログラム運営の仕組み化（定例ミーティング設計・報告フォーマット・評価基準）でオーバーヘッドを削減。必要に応じてUNIDGEが運営代行・共同運営として入り込む体制も構築できる。', tools:'プログラム運営標準化WS・UNIDGE運営支援・共同運営体制設計' },
+                ]},
+            ]},
+          { id:'oi_scale', tag:'成果創出・発展', name:'プログラムの成果を事業化・継続改善したい', desc:'採択事業の本格展開・プログラムのPDCA・社内への成果訴求を行いたい段階。',
+            questions:[
+              { q:'DemoDay後に本格事業化できた案件がなく、成果を説明できない',
+                domains:[
+                  { d:'UNIDGE',     score:2, approach:'DemoDay後〜本格事業化のフェーズをAXL・Innovationと連携してハンドオフ。「POCで終わらない」構造を最初から設計する。事業化した案件の経営へのアピール方法と、失敗案件の「学び」としての活用法も整理する。', tools:'UNIDGE→AXL連携・事業化ハンドオフ設計・成果報告テンプレート' },
+                  { d:'AXL',        score:1, approach:'DemoDay後に本格スケールの可能性が見えた案件をAXL 5スタジオが引き受け、GTM設計から実行まで伴走する。', tools:'AXL GTM設計・Acceleration OS・スタジオ連携' },
+                ]},
+              { q:'プログラムを毎年続けているが改善されず、マンネリ化している',
+                domains:[
+                  { d:'UNIDGE',     score:2, approach:'プログラムのPDCA設計（テーマ・審査基準・選考プロセス・伴走支援の振り返り）を支援。参加スタートアップ・社内担当者・経営からのフィードバックを構造化して次回設計に反映する仕組みを提供。', tools:'プログラムPDCA設計WS・参加者フィードバック設計・改善計画策定' },
+                ]},
             ]},
         ]},
     ]},
@@ -842,166 +1008,6 @@ const ROLE_DATA = [
               { d:'AXL', score:2, approach:'EXIT戦略の選択肢整理、資本政策立案、ガバナンス設計、PMI支援。', tools:'AXL EXIT支援メニュー' },
               { d:'ASG', score:0.5, approach:'10→100移管時の社内利害調整設計。既存事業部との役割分担・権限移譲のファシリテーション。', tools:'ASG利害関係調整フレームワーク' },
               { d:'AXFR', score:0.5, approach:'EXIT後の既存事業収益構造をAIで再設計。収益進化診断で優先施策を特定。', tools:'AXFR収益進化診断（axfr.ai）' },
-            ]},
-        ]},
-    ]},
-  { id:'oi', icon:'🤝', name:'OI・アクセラ担当者', desc:'外部スタートアップとの協業プログラム（OI・アクセラレーター）を設計・運営する担当者',
-    phases:[
-      { id:'oi_design', tag:'プログラム設計', name:'OI・アクセラプログラムを設計したい', desc:'テーマ設定・募集要項・審査基準・DemoDay設計など、プログラムの骨格を作りたい段階。',
-        questions:[
-          { q:'どのテーマ・課題領域でスタートアップを募集すればよいかわからない',
-            domains:[
-              { d:'UNIDGE',     score:2, approach:'自社戦略と市場動向を組み合わせたテーマ設定WSを提供。「自社が勝てる協業領域」と「スタートアップにとって魅力的な条件」の両立が重要。1000社超のDBから先行事例を参照しながら具体的な募集テーマに落とし込む。', tools:'テーマ設定WS・UNIDGE独自DB・プログラム設計支援' },
-              { d:'ASG',        score:0.5, approach:'経営戦略との接続を設計し、「なぜこのテーマで外部と協業するか」を経営が納得する言語で整理する。', tools:'ASG経営提案支援・戦略接続設計' },
-            ]},
-          { q:'審査基準・選定プロセスをどう設計すればよいかわからない',
-            domains:[
-              { d:'UNIDGE',     score:2, approach:'審査基準設計から審査ファシリテーション・フィードバック設計まで全面支援。「事業性・技術性・協業余地」の3軸で評価する基準を自社向けにカスタマイズ。審査員の選定と役割設計も含めて提供。', tools:'審査基準設計WS・審査ファシリテーション・選考プロセス設計' },
-            ]},
-        ]},
-      { id:'oi_recruit', tag:'募集・マッチング', name:'質の高いスタートアップを集めたい', desc:'募集告知・スクリーニング・マッチングの精度を上げたい段階。',
-        questions:[
-          { q:'応募が集まらない・質の低いスタートアップしか来ない',
-            domains:[
-              { d:'UNIDGE',     score:2, approach:'UNIDGE独自のネットワーク（1000社超のスタートアップDB）を活用したターゲットスカウトを実施。「待ちの応募募集」から「攻めのスカウト」に切り替え、質の高い候補を集める。告知媒体・メッセージング設計も支援。', tools:'UNIDGEスタートアップDB・スカウト支援・告知・PR設計' },
-            ]},
-          { q:'自社が求めるテーマに合うスタートアップの探し方がわからない',
-            domains:[
-              { d:'UNIDGE',     score:2, approach:'テーマ×技術×ステージで絞り込んだスタートアップ候補リストを提供。類似テーマで協業実績がある企業の事例も合わせて提示し、「自社に合う協業パターン」の解像度を上げる。', tools:'UNIDGE独自DB・テーマ別スタートアップ探索・協業事例調査' },
-              { d:'Innovation', score:0.5, approach:'社内公募と外部スタートアップを組み合わせたハイブリッド型の設計で、内外の候補を横断的にスクリーニングする仕組みを提供。', tools:'社内公募×OIプログラム連携設計' },
-            ]},
-        ]},
-      { id:'oi_support', tag:'伴走・POC支援', name:'採択後の事業化を前に進めたい', desc:'採択スタートアップとのPOC設計・進捗管理・壁打ちを行いたい段階。',
-        questions:[
-          { q:'採択後のPOCが進まず、担当者が何をすればよいかわからない',
-            domains:[
-              { d:'UNIDGE',     score:2, approach:'POC設計段階から「本格導入の判断条件」を合意させる型を提供。自社側の担当者が伴走できるよう、進捗管理・壁打ち・フィードバックの仕組みをセットで設計する。UNIDGEのコンサルタントが共同伴走役として入るオプションも提供。', tools:'POC設計WS・進捗管理フレーム・UNIDGE共同伴走支援' },
-              { d:'Innovation', score:0.5, approach:'スタートアップ側の事業仮説をFounder Issue Fitで深掘りし、POCのゴール設定を明確化する支援も提供。', tools:'Founder Issue Fit WS・POCゴール設計' },
-            ]},
-          { q:'スタートアップとの協業が自社担当者の工数を圧迫している',
-            domains:[
-              { d:'UNIDGE',     score:2, approach:'プログラム運営の仕組み化（定例ミーティング設計・報告フォーマット・評価基準）でオーバーヘッドを削減。必要に応じてUNIDGEが運営代行・共同運営として入り込む体制も構築できる。', tools:'プログラム運営標準化WS・UNIDGE運営支援・共同運営体制設計' },
-            ]},
-        ]},
-      { id:'oi_scale', tag:'成果創出・発展', name:'プログラムの成果を事業化・継続改善したい', desc:'採択事業の本格展開・プログラムのPDCA・社内への成果訴求を行いたい段階。',
-        questions:[
-          { q:'DemoDay後に本格事業化できた案件がなく、成果を説明できない',
-            domains:[
-              { d:'UNIDGE',     score:2, approach:'DemoDay後〜本格事業化のフェーズをAXL・Innovationと連携してハンドオフ。「POCで終わらない」構造を最初から設計する。事業化した案件の経営へのアピール方法と、失敗案件の「学び」としての活用法も整理する。', tools:'UNIDGE→AXL連携・事業化ハンドオフ設計・成果報告テンプレート' },
-              { d:'AXL',        score:1, approach:'DemoDay後に本格スケールの可能性が見えた案件をAXL 5スタジオが引き受け、GTM設計から実行まで伴走する。', tools:'AXL GTM設計・Acceleration OS・スタジオ連携' },
-            ]},
-          { q:'プログラムを毎年続けているが改善されず、マンネリ化している',
-            domains:[
-              { d:'UNIDGE',     score:2, approach:'プログラムのPDCA設計（テーマ・審査基準・選考プロセス・伴走支援の振り返り）を支援。参加スタートアップ・社内担当者・経営からのフィードバックを構造化して次回設計に反映する仕組みを提供。', tools:'プログラムPDCA設計WS・参加者フィードバック設計・改善計画策定' },
-            ]},
-        ]},
-    ]},
-  { id:'researcher', icon:'🧪', name:'R&D・研究員', desc:'技術・特許・研究成果を持ち、それを事業の種として活かしたい研究者・技術者',
-    phases:[
-      { id:'rd_inventory', tag:'技術棚卸し', name:'自分の技術が何に使えるか整理したい', desc:'保有技術・特許・研究成果を棚卸しし、事業化できる候補を特定したい段階。',
-        questions:[
-          { q:'自社技術・研究成果がどの市場・用途に使えるか整理できていない',
-            domains:[
-              { d:'R&D IC',     score:2, approach:'技術棚卸しWSで用途仮説を20〜30発散。「何の技術か」ではなく「誰のどんな困りごとを解けるか」に翻訳する視点を訓練。TRL×市場規模マトリクスで優先領域を絞り込む。元R&D所長クラスが同じ言語で伴走。', tools:'技術棚卸しWS・用途仮説発散・TRL評価フレーム・R&D IC技術×市場マトリクス' },
-              { d:'UNIDGE',     score:1, approach:'類似技術・アセットを持つスタートアップの事業事例DBを使い、「すでに誰かが似た技術で何を解いているか」を調査。自社技術の用途候補を逆算する。', tools:'UNIDGEスタートアップ事例DB・技術類似調査' },
-            ]},
-          { q:'特許はあるが、それが事業価値として高いかどうか判断できない',
-            domains:[
-              { d:'R&D IC',     score:2, approach:'特許の技術的差別性と市場ニーズのギャップを診断。「守るための特許」か「攻めるための特許」かを整理し、競合対比で事業価値を可視化する。', tools:'特許価値診断・競合技術マッピング・R&D IC事業化評価' },
-              { d:'UNIDGE',     score:1, approach:'同領域のスタートアップが特許をどう活用しているかを調査し、自社特許のポジショニングを整理する。', tools:'UNIDGEスタートアップ特許調査' },
-            ]},
-        ]},
-      { id:'rd_market', tag:'市場・顧客探索', name:'技術を必要としている顧客を見つけたい', desc:'「誰が・なぜ・いくら払うか」を技術側から逆引きで探していきたい段階。',
-        questions:[
-          { q:'技術の強みはわかるが、誰がどんな文脈で困っているかイメージできない',
-            domains:[
-              { d:'R&D IC',     score:2, approach:'技術起点の「顧客仮説発散」で、想定される困りごとを10〜20個洗い出す。研究者が自分でヒアリングすると相手が忖度しやすいため、第三者（ADコンサルタント）が代理でヒアリングする形式を推奨。', tools:'顧客仮説発散WS・R&D ICヒアリング代行・Founder Issue Fit WS' },
-              { d:'Innovation', score:1, approach:'「技術→課題→顧客」ではなく「顧客→課題→技術」の逆引き思考に切り替えるFounder Issue Fit支援。課題が深いかどうかの判定基準も提供。', tools:'Founder Issue Fit WS・顧客仮説検証設計' },
-            ]},
-          { q:'顧客候補にヒアリングしても「いいですね」で終わり、本音の課題が聞けない',
-            domains:[
-              { d:'R&D IC',     score:2, approach:'研究者・技術者が顧客ヒアリングする際に起きやすい「評価モード」「社交辞令」問題を解消するヒアリング設計を提供。「課題の深さ」を測る質問設計と、第三者が中立で聞く体制を組む。', tools:'ヒアリング設計WS・課題深度測定フレーム・R&D ICヒアリング代行' },
-              { d:'Innovation', score:1, approach:'ヒアリング後のデータ解釈支援。「本当に刺さっているか」の判断基準を伴走で提供する。', tools:'IncubationSuite・Issue Fit判定支援' },
-            ]},
-        ]},
-      { id:'rd_poc', tag:'事業化・POC', name:'技術を使ったPOCを進めたい', desc:'有望な用途候補が見つかり、試作・実証実験・初期顧客獲得を進めたい段階。',
-        questions:[
-          { q:'研究のPOCはできるが「事業としてのPOC設計」がわからない',
-            domains:[
-              { d:'R&D IC',     score:2, approach:'研究POCと事業POCの違い（KPIが「技術的成立」から「顧客が金を払うか」に変わる）を整理。事業POC設計から初期顧客候補の選定・検証シナリオの構築まで伴走。', tools:'R&D IC事業POC設計・顧客候補選定支援・IncubationSuite' },
-              { d:'Innovation', score:1, approach:'SEED審査を見据えた事業計画の骨格作り。技術者が苦手な「なぜ自分たちが・今・これを解くか」の言語化を支援。', tools:'IncubationSuite・Founder Issue Fit WS・SEED審査支援' },
-            ]},
-          { q:'技術的には成立したが、採算が取れる事業モデルが描けない',
-            domains:[
-              { d:'R&D IC',     score:2, approach:'技術起点の事業モデル設計。価格設定・顧客へのデリバリーモデル・収益化タイミングを、実際の大企業R&D事業化事例をもとに設計する。', tools:'R&D IC事業モデル設計WS・収益化シミュレーション' },
-              { d:'AXL',        score:1, approach:'初期営業・チャネル設計をAXLが支援。技術系サービスの初期顧客獲得とユニットエコノミクスの検証を実行レベルで伴走。', tools:'AXL GTM設計WS・初期顧客獲得支援' },
-            ]},
-        ]},
-      { id:'rd_internal', tag:'組織・社内調整', name:'研究部門と事業部門の壁を越えたい', desc:'社内の承認・リソース・協力を得て、研究から事業へ移行したい段階。',
-        questions:[
-          { q:'研究部門と事業部門でゴール・言語が違い、連携が進まない',
-            domains:[
-              { d:'R&D IC',     score:2, approach:'R&D×事業部門の連携設計を専門とする支援。「技術の言語」と「事業の言語」を翻訳し、共通KPIと役割分担を設計。両組織のキーパーソンを巻き込むファシリテーションを提供。', tools:'R&D IC組織連携設計・部門間ファシリテーションWS' },
-              { d:'ASG',        score:1, approach:'組織横断の利害関係マッピングで、協力者・障壁となる人・中立者を特定。動かすための順序と働きかけ方を設計する。', tools:'ASG利害関係マッピング・変革フェーズ診断' },
-            ]},
-          { q:'研究成果を事業化する評価・承認プロセスが社内に存在しない',
-            domains:[
-              { d:'R&D IC',     score:2, approach:'R&D発の事業化専用ステージゲートの設計支援。「研究評価指標（論文・特許）」と「事業評価指標（顧客・収益）」を分離し、研究部門が使いやすい制度設計を行う。', tools:'R&D IC専用ステージゲート設計・評価基準設計WS' },
-              { d:'Innovation', score:1, approach:'社内公募制度のR&D特化版設計。R&D部門向けの制度設計と事務局体制の立ち上げを支援。', tools:'IncubationSuite・R&D向け制度設計・Innovation制度コンサル' },
-            ]},
-        ]},
-    ]},
-  { id:'bizdev', icon:'🔬', name:'事業開発担当者', desc:'会社・部署から特定テーマの新規事業開発を任され、テーマ探索〜事業化を推進する担当者',
-    phases:[
-      { id:'bd_explore', tag:'テーマ探索', name:'取り組む事業テーマを特定したい', desc:'技術・アセット・市場機会から、攻めるべき事業テーマを見つけたい段階。',
-        questions:[
-          { q:'自社の強み（技術・アセット）からどの事業領域を狙えるかわからない',
-            domains:[
-              { d:'R&D IC',     score:2, approach:'技術棚卸しWSで自社技術・アセットの用途仮説を20〜30発散。TRLとビジネス規模でマトリクス化し、攻めるべきテーマを絞り込む。元R&D所長クラスが伴走。', tools:'技術棚卸しWS・TRL評価・用途仮説発散・R&D IC技術×市場マトリクス' },
-              { d:'UNIDGE',     score:1, approach:'類似技術・アセットを持つスタートアップの事業事例から、自社の「出口」候補を逆算する。', tools:'UNIDGEスタートアップ事例DB' },
-              { d:'Innovation', score:1, approach:'「誰の・どんな課題を解くか」に引き戻すFounder Issue Fitでテーマ絞り込みを支援。', tools:'Founder Issue Fit WS' },
-            ]},
-          { q:'テーマが広すぎてどこから始めればよいかわからない',
-            domains:[
-              { d:'Innovation', score:2, approach:'「課題の深さ×実現可能性×なぜ自分たちか」の3軸でテーマを絞り込み、最初の一歩（顧客ヒアリング設計）まで伴走支援。', tools:'IncubationSuite・顧客仮説設計WS' },
-              { d:'R&D IC',     score:1, approach:'技術起点の場合、TRLと市場規模のマトリクスで短期・中期・長期の優先領域を整理する。', tools:'R&D IC技術×市場マトリクス' },
-            ]},
-        ]},
-      { id:'bd_verify', tag:'課題・市場検証', name:'仮説を顧客・市場で検証したい', desc:'設定テーマの顧客が実在するか、課題の深さを確認したい段階。',
-        questions:[
-          { q:'顧客ヒアリングをどう設計・実施すればよいかわからない',
-            domains:[
-              { d:'Innovation', score:2, approach:'仮説設定→ヒアリング設計→「課題の深さ」判定の型を提供。Founder Issue Fitで起案者が自力で深掘りできるように伴走。仮説→検証→更新のループを高速化する。', tools:'IncubationSuite・ヒアリング設計テンプレ・Founder Issue Fit WS' },
-            ]},
-          { q:'競合・類似サービスが既にあるかどうか調べたい',
-            domains:[
-              { d:'UNIDGE',     score:2, approach:'スタートアップ1000社超のDBで類似ソリューションを調査。「すでに解かれている課題か」「差別化できるか」を素早く判断できる情報を提供する。', tools:'UNIDGEスタートアップ事例DB・競合調査支援' },
-              { d:'Innovation', score:1, approach:'競合がいても差別化できる仮説の立て方・顧客セグメントの切り分けを伴走支援。', tools:'IncubationSuite' },
-            ]},
-        ]},
-      { id:'bd_advance', tag:'事業化・スケール', name:'POC〜本格展開を推進したい', desc:'検証が一段落し、事業として立ち上げていきたい段階。',
-        questions:[
-          { q:'POCが終わったが本格展開への道筋が描けない',
-            domains:[
-              { d:'AXL',        score:2, approach:'SEED〜ALPHA段階をAXL 5スタジオが一気通貫で支援。GTM設計・インサイドセールス・マーケ機能構築まで実行レベルで伴走する。', tools:'AXL 5スタジオ・Acceleration OS・GTM設計WS' },
-              { d:'Innovation', score:1, approach:'SEED審査通過に向けた事業計画レビュー・KPI設計・撤退基準の整備を伴走支援。', tools:'IncubationSuite・ステージゲート審査支援' },
-            ]},
-          { q:'営業・マーケを担うリソースが社内にない',
-            domains:[
-              { d:'AXL',  score:2, approach:'インサイドセールス・デジタルマーケ・LP制作・ウェビナー運営まで実行機能として外から入り込む「仮想出島」スキーム。事業フェーズに合わせて機能を段階的に構築。', tools:'AXLセールス/マーケスタジオ・LP制作・ウェビナー運営・広告配信' },
-              { d:'AXFR', score:0.5, approach:'AIを活用したマーケ・セールス効率化で少ないリソースをカバーする。', tools:'axfr.ai収益進化診断・AX for Revenue Loop' },
-            ]},
-        ]},
-      { id:'bd_internal', tag:'社内推進', name:'社内の壁・調整に悩んでいる', desc:'経営や既存事業部の理解・協力を得るのが難しい段階。',
-        questions:[
-          { q:'社内で新規事業の優先度が低く、経営・上司を動かせない',
-            domains:[
-              { d:'ASG',        score:2, approach:'「軍で100億」のロジックで経営が動くための提案設計。小さな成功事例を積み上げながら徐々に優先度を上げる段階設計。パイプライン可視化で経営判断を促す。', tools:'ASG経営提案フレームワーク・企業変革フェーズ診断・パイプライン可視化' },
-              { d:'Innovation', score:1, approach:'「なぜ今か」の経営文脈を整理し、上司・経営を動かすロジックを一緒に言語化する支援。', tools:'Innovationコンサルティング・トップコミットメント設計' },
-            ]},
-          { q:'既存事業部の協力が得られずリソース・顧客へのアクセスができない',
-            domains:[
-              { d:'ASG', score:2, approach:'既存事業部の「負荷をほぼゼロにした小さな販売検証」で「やってみたら自分たちにもメリットがあった」を体験させる。利害関係マッピングで協力者を特定し、摩擦なく巻き込む。', tools:'ASG利害関係マッピング・3ヶ月スポット販売検証' },
             ]},
         ]},
     ]},
@@ -1187,15 +1193,65 @@ function goRoleEntry() {
 function goRolePhase(roleIdx) {
   history.push('role-list');
   state.roleIdx = roleIdx;
+  state.subtypeIdx = undefined;
   const role = ROLE_DATA[roleIdx];
-  renderSteps(2, 4);
-  setBreadcrumbs(['立場から入る', role.name]);
+
+  if (role.subtypes) {
+    renderSteps(2, 5);
+    setBreadcrumbs(['立場から入る', role.name]);
+    setScreen(`
+      <div class="prompt">
+        <h2>どのタイプに近いですか？</h2>
+      </div>
+      <div class="cards">
+        ${role.subtypes.map((s,i) => `
+          <div class="card" onclick="goRoleSubtype(${i})">
+            <div class="card-icon">${s.icon}</div>
+            <div class="card-body">
+              <div class="card-title">${s.name}</div>
+              <div class="card-desc">${s.desc}</div>
+            </div>
+            ${chevronRight()}
+          </div>
+        `).join('')}
+      </div>
+    `);
+  } else {
+    renderSteps(2, 4);
+    setBreadcrumbs(['立場から入る', role.name]);
+    setScreen(`
+      <div class="prompt">
+        <h2>今、どんな状況ですか？</h2>
+      </div>
+      <div class="cards">
+        ${role.phases.map((p,i) => `
+          <div class="card" onclick="goRoleQuestion(${i})">
+            <div class="card-body">
+              <div class="card-tag">${p.tag}</div>
+              <div class="card-title">${p.name}</div>
+              <div class="card-desc">${p.desc}</div>
+            </div>
+            ${chevronRight()}
+          </div>
+        `).join('')}
+      </div>
+    `);
+  }
+}
+
+function goRoleSubtype(subtypeIdx) {
+  history.push('role-subtype');
+  state.subtypeIdx = subtypeIdx;
+  const role = ROLE_DATA[state.roleIdx];
+  const subtype = role.subtypes[subtypeIdx];
+  renderSteps(3, 5);
+  setBreadcrumbs(['立場から入る', role.name, subtype.name]);
   setScreen(`
     <div class="prompt">
       <h2>今、どんな状況ですか？</h2>
     </div>
     <div class="cards">
-      ${role.phases.map((p,i) => `
+      ${subtype.phases.map((p,i) => `
         <div class="card" onclick="goRoleQuestion(${i})">
           <div class="card-body">
             <div class="card-tag">${p.tag}</div>
@@ -1213,9 +1269,15 @@ function goRoleQuestion(phaseIdx) {
   history.push('role-phase');
   state.phaseIdx = phaseIdx;
   const role = ROLE_DATA[state.roleIdx];
-  const phase = role.phases[phaseIdx];
-  renderSteps(3, 4);
-  setBreadcrumbs(['立場から入る', role.name, phase.tag]);
+  const subtype = (role.subtypes && state.subtypeIdx !== undefined) ? role.subtypes[state.subtypeIdx] : null;
+  const phases = subtype ? subtype.phases : role.phases;
+  const phase = phases[phaseIdx];
+  const step = subtype ? 4 : 3;
+  const total = subtype ? 5 : 4;
+  renderSteps(step, total);
+  setBreadcrumbs(subtype
+    ? ['立場から入る', role.name, subtype.name, phase.tag]
+    : ['立場から入る', role.name, phase.tag]);
   setScreen(`
     <div class="prompt">
       <h2>具体的な悩みは？</h2>
@@ -1236,10 +1298,15 @@ function goRoleQuestion(phaseIdx) {
 function goRoleResult(qIdx) {
   history.push('role-question');
   const role = ROLE_DATA[state.roleIdx];
-  const phase = role.phases[state.phaseIdx];
+  const subtype = (role.subtypes && state.subtypeIdx !== undefined) ? role.subtypes[state.subtypeIdx] : null;
+  const phases = subtype ? subtype.phases : role.phases;
+  const phase = phases[state.phaseIdx];
   const q = phase.questions[qIdx];
-  renderSteps(4, 4);
-  setBreadcrumbs(['立場から入る', role.name, phase.tag]);
+  const total = subtype ? 5 : 4;
+  renderSteps(total, total);
+  setBreadcrumbs(subtype
+    ? ['立場から入る', role.name, subtype.name, phase.tag]
+    : ['立場から入る', role.name, phase.tag]);
   renderResult(q, `「${q.q}」への支援`);
 }
 
@@ -1487,15 +1554,20 @@ function goPhaseQuestion(phaseAllIdx) {
   state.phaseAllIdx = phaseAllIdx;
   const p = ALL_PHASES[phaseAllIdx];
 
-  // collect all questions for this phase across all roles
+  // collect all questions for this phase across all roles (including subtypes)
   let allQs = [];
   ROLE_DATA.forEach(role => {
-    role.phases.forEach(ph => {
-      if (ph.id === p.id) {
-        ph.questions.forEach(q => {
-          if (!allQs.find(x => x.q === q.q)) allQs.push(q);
-        });
-      }
+    const allPhaseLists = role.subtypes
+      ? role.subtypes.map(s => s.phases)
+      : [role.phases];
+    allPhaseLists.forEach(phases => {
+      phases.forEach(ph => {
+        if (ph.id === p.id) {
+          ph.questions.forEach(q => {
+            if (!allQs.find(x => x.q === q.q)) allQs.push(q);
+          });
+        }
+      });
     });
   });
 
