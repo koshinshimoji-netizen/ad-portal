@@ -248,6 +248,180 @@ body {
 .step-dot.done { background: var(--text); }
 .step-dot.active { background: var(--text); width: 22px; border-radius: 4px; }
 .step-label { font-size: 11px; color: var(--muted); margin-left: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
+
+/* ── フェーズタイムライン ── */
+.phase-timeline {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.phase-cell {
+  flex: 1;
+  min-width: 56px;
+  text-align: center;
+  padding: 8px 4px;
+  border-radius: 8px;
+  background: #f5f5f5;
+}
+.phase-cell--active {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+}
+.phase-score {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.phase-label {
+  font-size: 10px;
+  color: #888;
+  margin-top: 3px;
+  line-height: 1.3;
+}
+
+/* ── チャレンジカード ── */
+.chal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.chal-card {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.chal-problem {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 13px;
+  color: #333;
+}
+.chal-divider {
+  border-top: 1px dashed;
+  margin: 10px 0;
+}
+.chal-solution {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 13px;
+  color: #333;
+}
+.chal-icon {
+  flex-shrink: 0;
+  font-size: 13px;
+  color: #e57373;
+  margin-top: 1px;
+}
+.chal-icon--sol {
+  background: #333;
+  color: #fff;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-style: normal;
+}
+
+/* ── アプローチグループタイル ── */
+.ag-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+.ag-tile {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.ag-tile-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 8px;
+}
+.ag-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.ag-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.ag-name {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.ag-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.ag-items li {
+  font-size: 11px;
+  color: #555;
+  padding: 4px 0;
+  border-top: 1px solid #f0f0f0;
+  line-height: 1.5;
+}
+.ag-items li:first-child {
+  border-top: none;
+}
+
+/* ── ドメイン関係カード ── */
+.dr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dr-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.dr-card:hover {
+  background: #f8f8f8;
+}
+.dr-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dr-body {
+  flex: 1;
+  min-width: 0;
+}
+.dr-id {
+  font-size: 12px;
+  font-weight: 700;
+}
+.dr-rel {
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+}
+.dr-arrow {
+  width: 16px;
+  height: 16px;
+  color: #bbb;
+  flex-shrink: 0;
+}
 </style>
 </head>
 <body>
@@ -301,6 +475,12 @@ const DOMAIN_META = [
       'バーチャル投資スキーム：社内の本承認・予算確保前に、仮想的な投資家との対話を設計し起案者のビジネスモデルを鍛える仕組み。「内部で通過させたら動かせない」ではなく「動かせる実力になってから審査する」順番を設計することで、承認後の失速を防ぐ',
       '落選者コミュニティ支援：公募で落選した起案者を翌年の母集団として維持するコミュニティ施策。「落ちたら終わり」にならない設計が中長期の文化醸成の核心。IncubationSuiteの人材蓄積機能と組み合わせて、挑戦者コミュニティを資産として積み上げる',
     ],
+    approachGroups: [
+      { name:'制度設計', icon:'settings', indices:[0,1,6,7,8,9] },
+      { name:'育成・伴走', icon:'user-check', indices:[2,3] },
+      { name:'風土醸成', icon:'flame', indices:[4] },
+      { name:'ツール活用', icon:'tool', indices:[5] },
+    ],
     cases:[
       { company:'トヨタ自動車', tag:'仕組みづくり', summary:'B-project（社会課題起点の全社公募制度）を設計・運営。2022年度の起案者総数3,500人以上。「リーンスタートアップ」→「トヨタ生産方式」と企業固有の言葉に翻訳しながら浸透。ステージゲートが全社のものさしとして定着。', url:'https://alphadrive.co.jp/project-archive/toyota/' },
       { company:'artience（化学）', tag:'仕組みづくり', summary:'公募制度を全面刷新。評価基準の再設計・応募ハードル低減でエントリー数を大幅増加。審査基準の統一化と新規事業文化の醸成をセットで支援。', url:'https://alphadrive.co.jp/project-archive/artience/' },
@@ -334,6 +514,12 @@ const DOMAIN_META = [
       '事業計画・組織・採用・財務・法務まで「1→10の全機能」をワンストップで提供',
       'リソース調達4類型の使い分け設計：①正社員採用（コミット重視だがタイミング制御困難）②社内異動・兼務（採用より現実的だが欲しい人材を即座に動かせない）③法人委託（MarchOn等との連携で予算管理しやすい）④個人業務委託（低コストでバイネーム指名可能、ただしディレクション設計が成否を左右）。「どのフェーズで何を外に出すか」の切り分けが核心。顧客ヒアリング・仮説検証・プライシング交渉は内部で担うべき仕事、市場調査・クリエイティブ制作・開発・マーケ運用は外部活用で加速できる仕事',
       'アルファドライブパートナーズ：新規事業向け外部人材マッチング支援サービス（新リリース）。無償のリソースアセスメント診断で「今何が足りないか」を特定し、適切な外部人材をマッチングする。期間・スコープ・ゴールを事前に合意するディレクション設計まで一貫支援',
+    ],
+    approachGroups: [
+      { name:'伴走支援', icon:'briefcase', indices:[0,1,2] },
+      { name:'GTM実行', icon:'speakerphone', indices:[3] },
+      { name:'EXIT戦略', icon:'flag', indices:[4,5] },
+      { name:'リソース調達', icon:'users', indices:[6,7] },
     ],
     cases:[
       { company:'アイシン', tag:'事業グロース', summary:'世界最小水粒子技術「AIR（アイル）」の事業化。Web経由新規リードほぼ0件→400件を獲得。理容美容向けLP制作・ウェビナー5回開催。EXIT戦略・資本政策の経営合意を完了。', url:'https://alphadrive.co.jp/project-archive/aisin/' },
@@ -369,6 +555,12 @@ const DOMAIN_META = [
       '仕組み（制度設計）と実行（事業開発伴走）をセットで提供。「社内も外も含めた広い選択肢」を届けられる唯一の体制',
       'AXL Studioとの連携によるDemoDay後の本格事業立ち上げ・グロース支援',
     ],
+    approachGroups: [
+      { name:'マッチング', icon:'arrows-exchange', indices:[0] },
+      { name:'事業開発', icon:'rocket', indices:[1,3] },
+      { name:'制度設計', icon:'layout-list', indices:[2] },
+      { name:'AD連携', icon:'link', indices:[4,5,6] },
+    ],
     cases:[
       { company:'リコー', tag:'OIプログラム', summary:'アクセラレーションプログラム「TRIBUS」の設計・運営。外部スタートアップとの協業型事業創出を推進。', url:'https://unidge.co.jp/interview/RICOH_202410' },
       { company:'コーセー', tag:'OI制度設計', summary:'外部の力を取り入れられる制度を設計。当初はOEMとの連携からスタートし、他の大手品メーカーとの連携へと拡張。社外協業の対象を段階的に広げた事例。', url:'https://alphadrive.co.jp/project-archive/kose_2024/' },
@@ -403,6 +595,12 @@ const DOMAIN_META = [
       'R&D組織向け8論点制度設計（テーマ設定・審査基準・メンタリング体制・知財ガイドライン・技術ロードマップ等）',
       '元R&D組織のトップ経験者によるリーダー向けマネジメント支援（宣言・ビジョン設計・判断高速化）',
     ],
+    approachGroups: [
+      { name:'技術棚卸し', icon:'microscope', indices:[0,1,2,3] },
+      { name:'制度設計', icon:'clipboard-list', indices:[4,7] },
+      { name:'ツール・研修', icon:'school', indices:[5,6] },
+      { name:'組織変革', icon:'users-group', indices:[8] },
+    ],
     cases:[
       { company:'ライオン（センター長 宇野氏の実績）', tag:'組織変革', summary:'イノベーションラボを設立。「既存事業に関わる仕事はしません」を宣言し、ネットワーク型組織×デニムユニフォームで文化を変革。5年間で約50名の新規事業人材を輩出。研究員が「覚醒」し事業開発リーダーへと変貌する事例を多数創出。', url:'https://alphadrive.co.jp/knowledge/event_report/lion_rd/' },
       { company:'トヨタ自動車（R&D連携）', tag:'制度設計', summary:'B-projectでR&D部門とイノベーション部門が共同開催・共同審査する体制を構築。異なる専門的視点で審査が可能になり、R&D発の事業候補の質と量が向上。', url:'https://alphadrive.co.jp/project-archive/toyota/' },
@@ -428,8 +626,13 @@ const DOMAIN_META = [
       '経営層へのエコシステム提案（新規事業経営提案・ROI設計・ポートフォリオ可視化）',
       'ヒアリングの型：「自力でできないことは？」「苦戦ポイントは？」を仮説ベースで質問し、0→1か1→10か・技術起点か顧客起点かの軸でニーズを構造化',
       'ADグループ全体の支援機能（Innovation/AXL/UNIDGE/R&D IC）を統合したアカウント設計',
-      '既存顧客の深耕戦略（他部門への展開・アップセル・新規提案パッケージ開発）',
       'リソース体制設計：事業フェーズに応じた社内兼務・外部委託・採用の最適組み合わせを設計。アルファドライブパートナーズ（外部人材マッチング）と組み合わせて「足りないリソースを最速で補う体制」を経営に提案する。「リソースが揃ってからやる」ではなく「やりながら調達する」設計が大企業新規事業の要諦',
+    ],
+    approachGroups: [
+      { name:'診断・戦略', icon:'chart-bar', indices:[0,3,4] },
+      { name:'人材育成', icon:'user-star', indices:[1] },
+      { name:'経営提案', icon:'presentation', indices:[2] },
+      { name:'体制設計', icon:'building', indices:[5] },
     ],
     cases:[
       { company:'ADグループ主要顧客（複数）', tag:'エコシステム設計', summary:'複数ドメインの支援をまたぐ顧客に対し、ADグループ全体の支援を一つの企業変革戦略として統合設計。「どのフェーズにいてどの機能をいつ使うか」の全体ロードマップを提供。' },
@@ -459,6 +662,12 @@ const DOMAIN_META = [
       '大企業セキュリティ対応の専用AI環境「AX Dejima」の構築・運用（社内情報をクラウドに出さない設計）',
       '収益進化診断（axfr.ai）による現状のAI活用レベルの可視化と優先改善ポイントの特定',
     ],
+    approachGroups: [
+      { name:'ループ実行', icon:'refresh', indices:[0,3,4] },
+      { name:'高速開発', icon:'bolt', indices:[1,2] },
+      { name:'インフラ', icon:'server', indices:[5] },
+      { name:'診断', icon:'zoom-scan', indices:[6] },
+    ],
     cases:[
       { company:'大企業向け実績（複数）', tag:'収益進化', summary:'AI導入済みだが収益連動していない企業に対し、AX for Revenue Loopを導入。既存事業のマネタイズ構造をAIで再設計し、収益成長を実現した事例複数。詳細は担当コンサルタントへ。' },
     ],
@@ -469,6 +678,36 @@ const DOMAIN_META = [
     ]
   },
 ];
+// ── ドメイン関係 ──
+const DOMAIN_RELATIONS = {
+  'Innovation': [
+    { id:'AXL',    rel:'公募で生まれた事業候補をAXLスタジオが加速' },
+    { id:'UNIDGE', rel:'社内起点からオープンイノベーションへ拡張' },
+    { id:'R&D IC', rel:'技術棚卸しから公募・制度設計へ接続' },
+  ],
+  'AXL': [
+    { id:'Innovation', rel:'公募・制度で創出した事業を受け取り加速' },
+    { id:'UNIDGE',     rel:'協業成立後の本格事業立ち上げを担当' },
+    { id:'AXFR',       rel:'グロース後の収益最大化フェーズへ接続' },
+  ],
+  'UNIDGE': [
+    { id:'Innovation', rel:'社内起点と社外リソースを橋渡し' },
+    { id:'AXL',        rel:'マッチング後はAXL Studioが本格推進' },
+  ],
+  'R&D IC': [
+    { id:'Innovation', rel:'技術棚卸しから公募制度・創出フローへ' },
+    { id:'UNIDGE',     rel:'技術保有企業と協業先をつなぐ' },
+  ],
+  'ASG': [
+    { id:'Innovation', rel:'全社エコシステムの創出機能を統合' },
+    { id:'AXL',        rel:'事業加速フェーズへの統合戦略' },
+    { id:'UNIDGE',     rel:'オープンイノベーション戦略の設計' },
+    { id:'R&D IC',     rel:'技術起点の事業化戦略との接続' },
+  ],
+  'AXFR': [
+    { id:'AXL', rel:'AXLによる事業グロース後の収益拡大フェーズ' },
+  ],
+};
 
 // ── 課題ベース ──
 const CHALLENGE_DATA = [
@@ -1418,12 +1657,126 @@ function extractPageTerms(d) {
   return found;
 }
 
+function domainIcon(key) {
+  const icons = {
+    'settings': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+    'user-check': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>',
+    'flame': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
+    'tool': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>',
+    'briefcase': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
+    'speakerphone': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a5 5 0 0 1 0 8"/><path d="M14 3.23v17.54a1 1 0 0 1-1.64.77L4.41 15H2a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h2.41l7.95-6.54A1 1 0 0 1 14 3.23z"/><path d="M21 5.05a11 11 0 0 1 0 13.9"/></svg>',
+    'flag': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>',
+    'users': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+    'arrows-exchange': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4 4 4"/><path d="M17 8v12m0 0 4-4m-4 4-4-4"/></svg>',
+    'rocket': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>',
+    'layout-list': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="6" height="6" rx="1"/><path d="M13 5h8M13 9h5M13 15h8M13 19h5"/><rect x="3" y="15" width="6" height="6" rx="1"/></svg>',
+    'link': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+    'microscope': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg>',
+    'clipboard-list': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>',
+    'school': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>',
+    'users-group': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3z"/><path d="M8 11c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3z"/><path d="M8 13c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/><path d="M16 13c-.29 0-.62.02-.97.05C16.19 13.89 18 15.02 18 17v2h6v-2c0-2.66-5.33-4-8-4z"/></svg>',
+    'chart-bar': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>',
+    'user-star': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7a4 4 0 1 0 8 0 4 4 0 0 0-8 0"/><path d="M6 21v-2a4 4 0 0 1 4-4h2"/><path d="M17.8 20.817l-2.172 1.138a.392.392 0 0 1-.568-.41l.415-2.411-1.757-1.707a.389.389 0 0 1 .217-.665l2.428-.352.887-2.11a.392.392 0 0 1 .714 0l.887 2.11 2.428.352a.39.39 0 0 1 .217.665l-1.757 1.707.416 2.411a.392.392 0 0 1-.569.41z"/></svg>',
+    'presentation': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>',
+    'building': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>',
+    'refresh': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>',
+    'bolt': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+    'server': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>',
+    'zoom-scan': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3H4a1 1 0 0 0-1 1v3"/><path d="M7 21H4a1 1 0 0 1-1-1v-3"/><path d="M17 3h3a1 1 0 0 1 1 1v3"/><path d="M17 21h3a1 1 0 0 0 1-1v-3"/><circle cx="12" cy="12" r="3"/><path d="m15 15 2 2"/></svg>',
+  };
+  return icons[key] || icons['settings'];
+}
+
 function goDomainDetail(domainIdx) {
   history.push('domain-list');
   state.domainIdx = domainIdx;
   const d = DOMAIN_META[domainIdx];
   renderSteps(2, 3);
   setBreadcrumbs(['事業領域から入る', d.id]);
+
+  // フェーズタイムライン
+  const phaseOrder = ['WILL/ENTRY','MVP1','MVP2','SEED','ALPHA','EXIT'];
+  const phaseMap = {};
+  (d.whenUseful || []).forEach(w => { phaseMap[w.phase] = w; });
+  const timelineHTML = phaseOrder.map(ph => {
+    const w = phaseMap[ph];
+    const score = w ? w.score : '—';
+    const isActive = score === '◎' || score === '○';
+    return `
+      <div class="phase-cell${isActive ? ' phase-cell--active' : ''}" ${w ? `title="${w.note}"` : ''}>
+        <div class="phase-score" style="color:${isActive ? d.color : '#aaa'}">${score}</div>
+        <div class="phase-label">${ph}</div>
+      </div>`;
+  }).join('');
+
+  // チャレンジカード
+  const challengeHTML = (d.challenges || []).map(c => `
+    <div class="chal-card">
+      <div class="chal-problem">
+        <span class="chal-icon">⚠</span>
+        <span>${c.problem}</span>
+      </div>
+      <div class="chal-divider" style="border-color:${d.color}20"></div>
+      <div class="chal-solution">
+        <span class="chal-icon chal-icon--sol" style="background:${d.color}">→</span>
+        <span>${c.solution}</span>
+      </div>
+    </div>`).join('');
+
+  // アプローチグループタイル
+  const groupHTML = (d.approachGroups || []).map(g => {
+    const items = g.indices.map(i => d.approaches[i]).filter(Boolean);
+    return `
+      <div class="ag-tile">
+        <div class="ag-tile-head" style="color:${d.color}">
+          <span class="ag-icon">${domainIcon(g.icon)}</span>
+          <span class="ag-name">${g.name}</span>
+        </div>
+        <ul class="ag-items">
+          ${items.map(a => `<li>${a}</li>`).join('')}
+        </ul>
+      </div>`;
+  }).join('');
+
+  // ドメイン関係カード
+  const relations = DOMAIN_RELATIONS[d.id] || [];
+  const relHTML = relations.map(r => {
+    const rel = DOMAIN_META.find(m => m.id === r.id);
+    if (!rel) return '';
+    return `
+      <div class="dr-card" onclick="goDomainDetail(${DOMAIN_META.indexOf(rel)})">
+        <div class="dr-dot" style="background:${rel.color}"></div>
+        <div class="dr-body">
+          <div class="dr-id" style="color:${rel.color}">${rel.id}</div>
+          <div class="dr-rel">${r.rel}</div>
+        </div>
+        <svg class="dr-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3l5 5-5 5"/></svg>
+      </div>`;
+  }).join('');
+
+  // 支援事例
+  const caseHTML = (d.cases || []).map(c => `
+    <div class="case-card">
+      <div class="case-card-header">
+        <span class="case-company">${c.company}</span>
+        <span class="case-tag" style="background:${d.color}20;color:${d.color}">${c.tag}</span>
+      </div>
+      <div class="case-summary">${c.summary}</div>
+      ${c.url ? `<div style="margin-top:6px"><a href="${c.url}" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:${d.color};text-decoration:none;font-weight:600;">詳細を見る →</a></div>` : ''}
+    </div>`).join('');
+
+  // 用語チップ
+  const terms = extractPageTerms(d);
+  const termHTML = terms.size === 0 ? '' : `
+    <div class="domain-section">
+      <div class="domain-section-title" style="border-color:${d.color}">このページの用語</div>
+      <div class="concept-chips" style="margin-bottom:4px">
+        ${[...terms.entries()].map(([key, label]) =>
+          `<span class="concept-chip" onclick="openADDict('${key.replace(/'/g,"\\'")}'">${label}</span>`
+        ).join('')}
+      </div>
+    </div>`;
+
   setScreen(`
     <div class="domain-detail-header" style="background:${d.color}">
       <div class="ddh-name">${d.id}</div>
@@ -1431,69 +1784,32 @@ function goDomainDetail(domainIdx) {
     </div>
 
     <div class="domain-section">
-      <div class="domain-section-title" style="border-color:${d.color}">主に活躍するフェーズ・状況</div>
-      ${d.whenUseful.map(w => `
-        <div class="wu-row">
-          <span class="wu-phase">${w.phase}</span>
-          <span class="wu-score" style="color:${d.color}">${w.score}</span>
-          <span class="wu-note">${w.note}</span>
-        </div>
-      `).join('')}
+      <div class="domain-section-title" style="border-color:${d.color}">活躍するフェーズ</div>
+      <div class="phase-timeline">${timelineHTML}</div>
     </div>
 
     <div class="domain-section">
       <div class="domain-section-title" style="border-color:${d.color}">解決できる課題</div>
-      <div class="challenge-list">
-        ${d.challenges.map(c => `
-          <div class="challenge-item">
-            <div class="challenge-problem">
-              <span class="challenge-badge challenge-badge-problem">課題</span>
-              <span>${c.problem}</span>
-            </div>
-            <div class="challenge-solution">
-              <span class="challenge-badge challenge-badge-solution" style="background:${d.color}">解決法</span>
-              <span>${c.solution}</span>
-            </div>
-          </div>
-        `).join('')}
-      </div>
+      <div class="chal-list">${challengeHTML}</div>
     </div>
 
     <div class="domain-section">
-      <div class="domain-section-title" style="border-color:${d.color}">具体的な支援アプローチ</div>
-      <ul class="approach-list">
-        ${d.approaches.map(a => `<li class="approach-item"><span class="approach-dot" style="background:${d.color}"></span>${a}</li>`).join('')}
-      </ul>
+      <div class="domain-section-title" style="border-color:${d.color}">支援アプローチ</div>
+      <div class="ag-grid">${groupHTML}</div>
     </div>
+
+    ${relHTML ? `
+    <div class="domain-section">
+      <div class="domain-section-title" style="border-color:${d.color}">他のドメインとの連携</div>
+      <div class="dr-list">${relHTML}</div>
+    </div>` : ''}
 
     <div class="domain-section">
       <div class="domain-section-title" style="border-color:${d.color}">支援事例</div>
-      <div class="case-cards">
-        ${d.cases.map(c => `
-          <div class="case-card">
-            <div class="case-card-header">
-              <span class="case-company">${c.company}</span>
-              <span class="case-tag" style="background:${d.color}20;color:${d.color}">${c.tag}</span>
-            </div>
-            <div class="case-summary">${c.summary}</div>
-            ${c.url ? `<div style="margin-top:6px"><a href="${c.url}" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:${d.color};text-decoration:none;font-weight:600;">詳細を見る →</a></div>` : ''}
-          </div>
-        `).join('')}
-      </div>
+      <div class="case-cards">${caseHTML}</div>
     </div>
 
-    ${(() => {
-      const terms = extractPageTerms(d);
-      if (terms.size === 0) return '';
-      const chips = [...terms.entries()].map(([key, label]) =>
-        `<span class="concept-chip" onclick="openADDict('${key.replace(/'/g,"\\'")}'">${label}</span>`
-      ).join('');
-      return `
-        <div class="domain-section">
-          <div class="domain-section-title" style="border-color:${d.color}">このページの用語</div>
-          <div class="concept-chips" style="margin-bottom:4px">${chips}</div>
-        </div>`;
-    })()}
+    ${termHTML}
 
     <button class="restart-btn" onclick="goDetailEntry()">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" style="width:15px;height:15px"><path d="M2 8a6 6 0 1 0 .5-2.5"/><path d="M2 3v3h3"/></svg>
@@ -1501,7 +1817,6 @@ function goDomainDetail(domainIdx) {
     </button>
   `);
 }
-
 // ── 課題起点 ──
 function goChallengeEntry() {
   history.push('detail');
