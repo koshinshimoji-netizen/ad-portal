@@ -376,6 +376,93 @@ body {
 .ag-items li:first-child {
   border-top: none;
 }
+.ag-tile { cursor: pointer; }
+.ag-count {
+  font-size: 10px;
+  color: #aaa;
+  background: #f0f0f0;
+  border-radius: 10px;
+  padding: 1px 6px;
+  margin-left: 2px;
+}
+.ag-chevron {
+  width: 14px;
+  height: 14px;
+  margin-left: auto;
+  color: #bbb;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+.ag-tile--open .ag-chevron { transform: rotate(180deg); }
+.ag-expand {
+  display: none;
+  border-top: 1px solid #f0f0f0;
+  margin-top: 8px;
+  padding-top: 10px;
+}
+.ag-tile--open .ag-expand { display: block; }
+.ag-full-item {
+  display: flex;
+  gap: 8px;
+  padding: 6px 0;
+  border-top: 1px solid #f5f5f5;
+  font-size: 12px;
+  color: #444;
+  line-height: 1.55;
+}
+.ag-full-item:first-child { border-top: none; }
+.ag-full-num {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  background: #f0f0f0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: #888;
+}
+.ag-full-text { flex: 1; }
+.ag-expand-cases {
+  margin-top: 10px;
+  background: #fafaf8;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.ag-expand-cases-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #aaa;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.ag-case-item {
+  padding: 7px 0;
+  border-top: 1px solid #eee;
+}
+.ag-case-item:first-child { border-top: none; }
+.ag-case-company {
+  font-size: 12px;
+  font-weight: 700;
+  color: #333;
+  display: block;
+  margin-bottom: 3px;
+}
+.ag-case-summary {
+  font-size: 11px;
+  color: #666;
+  line-height: 1.55;
+  display: block;
+}
+.ag-case-link {
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 4px;
+}
 
 /* ── 事業部連携カード ── */
 .domrel-list {
@@ -1688,6 +1775,10 @@ function domainIcon(key) {
   return icons[key] || icons['settings'];
 }
 
+function toggleAgTile(el) {
+  el.classList.toggle('ag-tile--open');
+}
+
 function goDomainDetail(domainIdx) {
   history.push('domain-list');
   state.domainIdx = domainIdx;
@@ -1727,18 +1818,40 @@ function goDomainDetail(domainIdx) {
   // アプローチグループタイル
   const groupHTML = (d.approachGroups || []).map(g => {
     const items = g.indices.map(i => d.approaches[i]).filter(Boolean);
+    const relCases = (d.cases || []).filter(c => c.tag === g.name);
     return `
-      <div class="ag-tile">
+      <div class="ag-tile" onclick="toggleAgTile(this)">
         <div class="ag-tile-head" style="color:${d.color}">
           <span class="ag-icon">${domainIcon(g.icon)}</span>
           <span class="ag-name">${g.name}</span>
+          <span class="ag-count">${items.length}</span>
+          <svg class="ag-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6l4 4 4-4"/></svg>
         </div>
         <ul class="ag-items">
           ${items.map(a => {
             const short = a.replace(/[（(【][\s\S]*/, '').replace(/[：:][\s\S]*/, '').trim() || a.slice(0, 30);
-            return `<li title="${a.replace(/"/g, '&quot;')}">${short}</li>`;
+            return `<li>${short}</li>`;
           }).join('')}
         </ul>
+        <div class="ag-expand">
+          <div class="ag-expand-approaches">
+            ${items.map((a, idx) => `
+              <div class="ag-full-item">
+                <span class="ag-full-num">${idx + 1}</span>
+                <span class="ag-full-text">${a}</span>
+              </div>`).join('')}
+          </div>
+          ${relCases.length ? `
+            <div class="ag-expand-cases">
+              <div class="ag-expand-cases-label">関連事例</div>
+              ${relCases.map(c => `
+                <div class="ag-case-item">
+                  <span class="ag-case-company">${c.company}</span>
+                  <span class="ag-case-summary">${c.summary}</span>
+                  ${c.url ? `<a href="${c.url}" target="_blank" rel="noopener noreferrer" class="ag-case-link" style="color:${d.color}" onclick="event.stopPropagation()">詳細を見る →</a>` : ''}
+                </div>`).join('')}
+            </div>` : ''}
+        </div>
       </div>`;
   }).join('');
 
