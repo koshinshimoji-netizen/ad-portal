@@ -1641,7 +1641,7 @@ function goRolePhase(roleIdx) {
   const role = ROLE_DATA[roleIdx];
 
   if (role.subtypes) {
-    renderSteps(2, 5);
+    renderSteps(2, 4);
     setBreadcrumbs(['立場から入る', role.name]);
     setScreen(`
       <div class="prompt">
@@ -1688,7 +1688,7 @@ function goRoleSubtype(subtypeIdx) {
   state.subtypeIdx = subtypeIdx;
   const role = ROLE_DATA[state.roleIdx];
   const subtype = role.subtypes[subtypeIdx];
-  renderSteps(3, 5);
+  renderSteps(2, 4);
   setBreadcrumbs(['立場から入る', role.name, subtype.name]);
   setScreen(`
     <div class="prompt">
@@ -1716,9 +1716,7 @@ function goRoleQuestion(phaseIdx) {
   const subtype = (role.subtypes && state.subtypeIdx !== undefined) ? role.subtypes[state.subtypeIdx] : null;
   const phases = subtype ? subtype.phases : role.phases;
   const phase = phases[phaseIdx];
-  const step = subtype ? 4 : 3;
-  const total = subtype ? 5 : 4;
-  renderSteps(step, total);
+  renderSteps(3, 4);
   setBreadcrumbs(subtype
     ? ['立場から入る', role.name, subtype.name, phase.tag]
     : ['立場から入る', role.name, phase.tag]);
@@ -1746,8 +1744,7 @@ function goRoleResult(qIdx) {
   const phases = subtype ? subtype.phases : role.phases;
   const phase = phases[state.phaseIdx];
   const q = phase.questions[qIdx];
-  const total = subtype ? 5 : 4;
-  renderSteps(total, total);
+  renderSteps(4, 4);
   setBreadcrumbs(subtype
     ? ['立場から入る', role.name, subtype.name, phase.tag]
     : ['立場から入る', role.name, phase.tag]);
