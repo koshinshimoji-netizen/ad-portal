@@ -377,13 +377,13 @@ body {
   border-top: none;
 }
 
-/* ── ドメイン関係カード ── */
-.dr-list {
+/* ── 事業部連携カード ── */
+.domrel-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-.dr-card {
+.domrel-card {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -394,29 +394,30 @@ body {
   cursor: pointer;
   transition: background 0.15s;
 }
-.dr-card:hover {
+.domrel-card:hover {
   background: #f8f8f8;
 }
-.dr-dot {
+.domrel-dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
 }
-.dr-body {
+.domrel-body {
   flex: 1;
   min-width: 0;
+  display: block;
 }
-.dr-id {
+.domrel-id {
   font-size: 12px;
   font-weight: 700;
 }
-.dr-rel {
+.domrel-rel {
   font-size: 12px;
   color: #666;
   margin-top: 2px;
 }
-.dr-arrow {
+.domrel-arrow {
   width: 16px;
   height: 16px;
   color: #bbb;
@@ -1435,7 +1436,7 @@ function goDetailEntry() {
         <div class="card-icon">🗂️</div>
         <div class="card-body">
           <div class="card-title">事業領域から入る</div>
-          <div class="card-desc">Innovation・AXL・AXFRなど、特定の事業ドメインを深く理解する</div>
+          <div class="card-desc">Innovation・AXL・AXFRなど、特定の事業部を深く理解する</div>
         </div>
         ${chevronRight()}
       </div>
@@ -1604,7 +1605,7 @@ function goDomainEntry() {
   setBreadcrumbs(['事業領域から入る']);
   setScreen(`
     <div class="prompt">
-      <h2>どのドメインを理解しますか？</h2>
+      <h2>どの事業部を理解しますか？</h2>
     </div>
     <div class="domain-grid">
       ${DOMAIN_META.map((d,i) => `
@@ -1733,7 +1734,10 @@ function goDomainDetail(domainIdx) {
           <span class="ag-name">${g.name}</span>
         </div>
         <ul class="ag-items">
-          ${items.map(a => `<li>${a}</li>`).join('')}
+          ${items.map(a => {
+            const short = a.replace(/[（(【][\s\S]*/, '').replace(/[：:][\s\S]*/, '').trim() || a.slice(0, 30);
+            return `<li title="${a.replace(/"/g, '&quot;')}">${short}</li>`;
+          }).join('')}
         </ul>
       </div>`;
   }).join('');
@@ -1744,13 +1748,13 @@ function goDomainDetail(domainIdx) {
     const rel = DOMAIN_META.find(m => m.id === r.id);
     if (!rel) return '';
     return `
-      <div class="dr-card" onclick="goDomainDetail(${DOMAIN_META.indexOf(rel)})">
-        <div class="dr-dot" style="background:${rel.color}"></div>
-        <div class="dr-body">
-          <div class="dr-id" style="color:${rel.color}">${rel.id}</div>
-          <div class="dr-rel">${r.rel}</div>
+      <div class="domrel-card" onclick="goDomainDetail(${DOMAIN_META.indexOf(rel)})">
+        <div class="domrel-dot" style="background:${rel.color}"></div>
+        <div class="domrel-body">
+          <div class="domrel-id" style="color:${rel.color}">${rel.id}</div>
+          <div class="domrel-rel">${r.rel}</div>
         </div>
-        <svg class="dr-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3l5 5-5 5"/></svg>
+        <svg class="domrel-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3l5 5-5 5"/></svg>
       </div>`;
   }).join('');
 
@@ -1800,8 +1804,8 @@ function goDomainDetail(domainIdx) {
 
     ${relHTML ? `
     <div class="domain-section">
-      <div class="domain-section-title" style="border-color:${d.color}">他のドメインとの連携</div>
-      <div class="dr-list">${relHTML}</div>
+      <div class="domain-section-title" style="border-color:${d.color}">他の事業部との連携</div>
+      <div class="domrel-list">${relHTML}</div>
     </div>` : ''}
 
     <div class="domain-section">
