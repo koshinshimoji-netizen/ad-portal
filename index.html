@@ -836,6 +836,13 @@ const DOMAIN_META = [
     ]
   },
 ];
+// ── 4事業戦略 ──
+const STRATEGY_META = [
+  { key:'biz-transform',  label:'企業変革戦略',           sub:'ひとつの大手企業に深く入る',   icon:'🏭', color:'#2563eb', domainIds:['Innovation','UNIDGE'] },
+  { key:'acceleration',   label:'アクセラレーション戦略',  sub:'ひとつの事業に深く入る',       icon:'🚀', color:'#7c3aed', domainIds:['AXL','R&D IC'] },
+  { key:'regional',       label:'地域共創戦略',            sub:'ひとつの地域に深く入る',       icon:'🌏', color:'#059669', domainIds:['AXFR'] },
+  { key:'competence',     label:'コンピタンスマネジメント', sub:'つくった価値をさらに深める', icon:'🔬', color:'#ea580c', domainIds:['ASG'] },
+];
 // ── ドメイン関係 ──
 const DOMAIN_RELATIONS = {
   'Innovation': [
@@ -1513,7 +1520,7 @@ function renderSteps(depth, max) {
   }
   h += `<span class="step-label">${labels[Math.min(depth, labels.length-1)]}</span>`;
   document.getElementById('steps').innerHTML = h;
-  document.getElementById('back-btn').style.display = depth > 0 ? 'flex' : 'none';
+  document.getElementById('back-btn').style.display = (depth > 0 || history.length > 0) ? 'flex' : 'none';
 }
 
 function setBreadcrumbs(items) {
@@ -1589,7 +1596,7 @@ function goDetailEntry() {
         </div>
         ${chevronRight()}
       </div>
-      <div class="card" onclick="goDomainEntry()">
+      <div class="card" onclick="goStrategyEntry()">
         <div class="card-icon">🗂️</div>
         <div class="card-body">
           <div class="card-title">事業領域から入る</div>
@@ -1752,17 +1759,55 @@ function goRoleResult(qIdx) {
 }
 
 // ── 事業領域起点 ──
-function goDomainEntry() {
+function goStrategyEntry() {
   history.push('detail');
   state.entryType = 'domain';
-  renderSteps(1, 3);
+  state.strategyKey = null;
+  renderSteps(1, 4);
   setBreadcrumbs(['事業領域から入る']);
   setScreen(`
     <div class="prompt">
-      <h2>どの事業部を理解しますか？</h2>
+      <h2>どの戦略領域から入りますか？</h2>
+      <p>ADは4つの事業戦略で大企業変革を推進しています。</p>
+    </div>
+    <div class="cards">
+      ${STRATEGY_META.map(s => {
+        const domains = DOMAIN_META.filter(d => s.domainIds.includes(d.id));
+        return `
+        <div class="card" onclick="goDomainByStrategy('${s.key}')">
+          <div class="card-icon">${s.icon}</div>
+          <div class="card-body">
+            <div class="card-tag" style="color:${s.color};border-color:${s.color}33;background:${s.color}11">${s.label}</div>
+            <div class="card-title">${s.sub}</div>
+            <div class="card-desc">${domains.map(d => d.id).join(' / ')}</div>
+          </div>
+          ${chevronRight()}
+        </div>`;
+      }).join('')}
+    </div>
+  `);
+}
+
+function goDomainByStrategy(strategyKey) {
+  history.push('strategy-list');
+  state.strategyKey = strategyKey;
+  const strategy = STRATEGY_META.find(s => s.key === strategyKey);
+  const domains = DOMAIN_META.map((d,i) => ({d, i})).filter(({d}) => strategy.domainIds.includes(d.id));
+  renderSteps(2, 4);
+  setBreadcrumbs(['事業領域から入る', strategy.label]);
+
+  if (domains.length === 1) {
+    goDomainDetail(domains[0].i);
+    return;
+  }
+
+  setScreen(`
+    <div class="prompt">
+      <h2>${strategy.label}</h2>
+      <p>${strategy.sub}</p>
     </div>
     <div class="domain-grid">
-      ${DOMAIN_META.map((d,i) => `
+      ${domains.map(({d, i}) => `
         <div class="domain-index-card" style="background:${d.color}" onclick="goDomainDetail(${i})">
           <div class="dic-name">${d.id}</div>
           <div class="dic-desc">${d.short}</div>
@@ -1866,8 +1911,9 @@ function goDomainDetail(domainIdx) {
   history.push('domain-list');
   state.domainIdx = domainIdx;
   const d = DOMAIN_META[domainIdx];
-  renderSteps(2, 3);
-  setBreadcrumbs(['事業領域から入る', d.id]);
+  const stratMeta = state.strategyKey ? STRATEGY_META.find(s => s.key === state.strategyKey) : null;
+  renderSteps(stratMeta ? 3 : 2, stratMeta ? 4 : 3);
+  setBreadcrumbs(stratMeta ? ['事業領域から入る', stratMeta.label, d.id] : ['事業領域から入る', d.id]);
 
   // フェーズタイムライン
   const phaseOrder = ['WILL/ENTRY','MVP1','MVP2','SEED','ALPHA','EXIT'];
@@ -2950,7 +2996,12 @@ function goBack() {
     else if (prev === 'role-phase') { goRoleEntry(); state.roleIdx = undefined; }
     else { goDetailEntry(); }
   } else if (state.entryType === 'domain') {
-    if (prev === 'domain-list') { goDomainEntry(); }
+    if (prev === 'domain-list') {
+      if (state.strategyKey) {
+        const s = STRATEGY_META.find(s => s.key === state.strategyKey);
+        (s && s.domainIds.length > 1) ? goDomainByStrategy(state.strategyKey) : goStrategyEntry();
+      } else { goStrategyEntry(); }
+    } else if (prev === 'strategy-list') { goStrategyEntry(); }
     else { goDetailEntry(); }
   } else if (state.entryType === 'challenge') {
     if (prev === 'challenge-question') { goChallengeQuestions(state.challengeCatIdx); }
